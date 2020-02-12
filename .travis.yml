@@ -14,10 +14,6 @@ install:
         - source activate testenv
 
 script:
-        - pytest -vv dryadic/tests/test_mtypes.py
-        - pytest -vv dryadic/tests/test_mcombs.py
-        - python dryadic/tests/test_cohorts.py
-        - python dryadic/tests/test_pipes.py
-        - python dryadic/tests/test_kbtl.py
-        - python dryadic/tests/test_stan.py
-        - python dryadic/tests/test_txs.py
+        - pytest -vv enricher/tests/test_enrichment.py
+        - pytest -vv enricher/tests/test_features.py
+        - python enricher/tests/test_regulon.py
