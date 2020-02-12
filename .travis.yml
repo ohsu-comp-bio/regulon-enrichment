@@ -1,0 +1,23 @@
+language: python
+python: 3.6
+os: linux
+
+install:
+        - sudo apt-get update
+        - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+        - bash miniconda.sh -b -p $HOME/miniconda
+        - export PATH="$HOME/miniconda/bin:$PATH"
+        - hash -r
+        - conda config --set always_yes yes --set changeps1 no
+        - conda update -q conda
+        - conda create -n testenv python=3.6 pytest numpy=1.17.3 pandas=0.25.3 scikit-learn=0.21.3 scipy=1.3.1
+        - source activate testenv
+
+script:
+        - pytest -vv dryadic/tests/test_mtypes.py
+        - pytest -vv dryadic/tests/test_mcombs.py
+        - python dryadic/tests/test_cohorts.py
+        - python dryadic/tests/test_pipes.py
+        - python dryadic/tests/test_kbtl.py
+        - python dryadic/tests/test_stan.py
+        - python dryadic/tests/test_txs.py
