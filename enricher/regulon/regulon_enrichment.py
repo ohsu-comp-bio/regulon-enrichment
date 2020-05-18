@@ -86,10 +86,7 @@ def quantile_nes_score(regulon, expr):
     t2 = pd.DataFrame(st.norm.ppf(t2.iloc[pos, ], loc=0, scale=1), columns=t2.columns, index=t2.index)
     sum1 = (mor * wts).dot(t2)
     nes = pd.DataFrame(sum1.values * nes_wt.values, columns=sum1.columns, index=sum1.index)
-    # relnm = os.path.join(dirname, '../experiments/{0}/data'.format(cohort))
-    #
-    # ensure_dir(relnm)
-    # write_pickle(nes, os.path.join(relnm, '{}_quantile_ranks.pkl'.format(cohort)))
+
 
     return nes
 
@@ -112,7 +109,7 @@ def load_quantile(regulon, expr, cohort):
         nes = read_pickle(quantile_nes)
     else:
         print('--- Generating quantile normalization scores ---')
-        nes = quantile_nes_score(regulon, expr.T, cohort)
+        nes = quantile_nes_score(regulon, expr.T)
 
     return nes
 

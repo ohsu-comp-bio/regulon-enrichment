@@ -133,8 +133,8 @@ def generate_expanded_regulon():
 
 
 def bgm_moa(regul_weights):
-    """ Fits regulon mode of activation weights to a bayesian gaussian mixture model with three components and computes the
-        probability of the three distributions (repression, non-influential, activation) for each regulator
+    """ Fits regulon mode of activation weights to a bayesian gaussian mixture model with three components and computes
+        the probability of the three distributions (repression, non-influential, activation) for each regulator
 
     Args:
         regul_weights (:obj: `pandas DataFrame`) : pandas DataFrame containing weight interactions between regulator and
@@ -243,14 +243,14 @@ def regulon_weight_assignment(regulator, expr, filtered_regulon):
     return regul_weights
 
 
-def structure_weights(regulator, pruned_regulon, F_statistics, r_frame, p_frame):
-    """ Calculates weights associated with regulators. Weights are the summation of the F-statistic and absolute spearman
-        correlation coefficient. The weight retains the sign of the spearman correlation coefficient.
+def structure_weights(regulator, pruned_regulon, f_statistics, r_frame, p_frame):
+    """ Calculates weights associated with regulators. Weights are the summation of the F-statistic and absolute
+        spearman correlation coefficient. The weight retains the sign of the spearman correlation coefficient.
 
     Args:
         regulator (str): A feature to assign weights to downstream interactions
         pruned_regulon (:obj:`pd.DataFrame`, shape = [n_interactions, 3]
-        F_statistics (dict) : Dictionary with key:{regulator} key and
+        f_statistics (dict) : Dictionary with key:{regulator} key and
         r_frame (:obj:`pd.DataFrame`), shape = [n_features, n_features]
         p_frame (:obj:`pd.DataFrame`), shape = [n_features, n_features]
 
@@ -263,7 +263,7 @@ def structure_weights(regulator, pruned_regulon, F_statistics, r_frame, p_frame)
     targs = sub_regul.DownGene
     p_ = p_frame.loc[targs, regulator]
     p_.name = 'likelihood'
-    f_ = F_statistics[regulator][0]
+    f_ = f_statistics[regulator][0]
     r_ = r_frame.loc[targs, regulator]
     w_ = (f_ + abs(r_)) * np.sign(r_)
     w_.index.name = 'Target'

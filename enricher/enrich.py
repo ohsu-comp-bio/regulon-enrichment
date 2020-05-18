@@ -169,7 +169,6 @@ class Enrichment(object):
         scaler_opt = {'standard': expression_utils.StandardScaler(), 'robust': expression_utils.RobustScaler(),
                       'minmax': expression_utils.MinMaxScaler(), 'quant': expression_utils.QuantileTransformer()}
 
-        print('--- Centering features with {} scaler ---'.format(scaler_type))
         if scaler_type not in scaler_opt:
             raise KeyError('{scaler_type} not supported scaler_type! Supported types include: {keys}'.format(
                 scaler_type = scaler_type, keys = ' | '.join(scaler_opt.keys())))
@@ -177,12 +176,12 @@ class Enrichment(object):
         scaler = scaler_opt[scaler_type]
 
         # Transpose frame to correctly orient frame for scaling and machine learning algorithms
+        print('--- log2 normalization ---')
 
         expr_t = expr[(expr.std(axis = 1) > thresh_filter)].T
         expr_lt = expression_utils.log_norm(expr_t)
 
-        print('--- log2 normalization ---')
-
+        print('--- Centering features with {} scaler ---'.format(scaler_type))
         scaled_frame = pd.DataFrame(scaler.fit_transform(expr_lt), index = expr_lt.index, columns = expr_lt.columns)
 
         return scaled_frame
