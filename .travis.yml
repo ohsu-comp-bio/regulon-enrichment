@@ -14,6 +14,6 @@ install:
         - source activate Enrich
 
 script:
-        - python -m unitest -v enricher/tests/test_enrichment.py
-        - python -m unitest -v enricher/tests/test_features.py
-        - python -m unitest -v enricher/tests/test_regulon.py
+        - python -m unittest -v enricher/tests/test_enrichment.py
+        - python -m unittest -v enricher/tests/test_features.py
+        - python -m unittest -v enricher/tests/test_regulon.py
