@@ -32,8 +32,7 @@ import functools
 
 
 def load_test_sif(sif='test.sif'):
-    return pd.read_csv(os.path.join(data_dir,sif), names = ['UpGene', 'Type', 'DownGene'], sep = '\t', header = None)
-
+    return pd.read_table(os.path.join(data_dir,sif), index_col=0)
 
 def load_test_expr(expr='test_expr.tsv'):
     return pd.read_csv(os.path.join(data_dir,expr), index_col=0, sep = '\t')
@@ -50,30 +49,28 @@ class EnrichTestCase(unittest.TestCase):
 
     def test_enrichment(self):
         sif = load_test_sif()
-        expr = load_test_expr().T
+        expr = load_test_expr()
         filt_sif = regulon_utils.filter_sif(sif)
         enr = enrich.Enrichment(expr=expr, cohort = 'TEST', regulon=filt_sif)
         self.assertSequenceEqual(enr.expr.shape, expr.shape)
         self.assertSequenceEqual(enr.regulon.shape, filt_sif.shape)
-        self.assertEquals(enr.scaled, False)
-        self.assertEquals(enr.regulators, None)
-        self.assertEquals(enr.regulon_size, 15)
-        self.assertEquals(enr.regulon_weights, None)
-        self.assertEquals(enr.thresh_filter, 0.1)
-        self.assertEquals(enr.total_enrichment, None)
-        self.assertEquals(enr.quant_nes, None)
+        self.assertEqual(enr.scaled, False)
+        self.assertEqual(enr.regulators, None)
+        self.assertEqual(enr.regulon_size, 15)
+        self.assertEqual(enr.regulon_weights, None)
+        self.assertEqual(enr.thresh_filter, 0.1)
+        self.assertEqual(enr.total_enrichment, None)
+        self.assertEqual(enr.quant_nes, None)
 
         enr.scale()
-        self.assertEquals(enr.scaled, True)
+        self.assertEqual(enr.scaled, True)
 
         enr.assign_weights()
-        self.assertNotEqual(enr.regulon_weights, None)
-        self.assertSequenceEqual(enr.regulon.shape, (606, 3))
+        self.assertSequenceEqual(enr.regulon_weights.shape, (606, 3))
         self.assertAlmostEqual(enr.regulon_weights.MoA.mean(),1.0364586150432187)
 
         enr.calculate_enrichment()
         self.assertSequenceEqual(enr.regulators.tolist(), ['TP53'])
-        self.assertNotEqual(enr.total_enrichment, None)
         self.assertSequenceEqual(enr.total_enrichment.shape, (6, 1))
 
 if __name__ == '__main__':

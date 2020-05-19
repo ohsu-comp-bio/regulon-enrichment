@@ -11,6 +11,7 @@ Author: Joey Estabrook <estabroj@ohsu.edu>
 import os
 import sys
 import unittest
+import pandas as pd
 
 base_dir = os.path.dirname(__file__)
 data_dir = os.path.join(base_dir, "resources")
@@ -35,10 +36,10 @@ class ExpressionUtilsTestCase(unittest.TestCase):
         self.assertAlmostEqual(log_expr['A1BG'].mean(), 6.845200696748805)
 
     def test_fit_and_transform(self):
-        expr = load_test_expr().T
+        expr = load_test_expr()
         normed_expr = expression_utils.fit_and_transform_array(expr)
         self.assertSequenceEqual(normed_expr.shape,(6, 16258))
-        self.assertAlmostEqual(expr_normed.mean().mean(), -0.13697546259217588)
+        self.assertAlmostEqual(normed_expr.mean().mean(), -0.13697546259217588)
 
 if __name__ == '__main__':
     unittest.main()

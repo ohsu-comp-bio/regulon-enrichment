@@ -10,10 +10,10 @@ install:
         - hash -r
         - conda config --set always_yes yes --set changeps1 no
         - conda update -q conda
-        - conda create -n testenv python=3.6 pytest numpy=1.17.3 pandas=0.25.3 scikit-learn=0.21.3 scipy=1.3.1
-        - source activate testenv
+        - conda create -n Enrich -f tests/resources/enrichment_env.yaml
+        - source activate Enrich
 
 script:
-        - pytest -vv enricher/tests/test_enrichment.py
-        - pytest -vv enricher/tests/test_features.py
-        - python enricher/tests/test_regulon.py
+        - python -m unitest -v enricher/tests/test_enrichment.py
+        - python -m unitest -v enricher/tests/test_features.py
+        - python -m unitest -v enricher/tests/test_regulon.py

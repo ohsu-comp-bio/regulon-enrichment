@@ -11,6 +11,9 @@ Author: Joey Estabrook <estabroj@ohsu.edu>
 import os
 import sys
 import unittest
+import warnings
+warnings.simplefilter("ignore", UserWarning)
+import pandas as pd
 
 base_dir = os.path.dirname(__file__)
 data_dir = os.path.join(base_dir, "resources")
@@ -20,7 +23,7 @@ sys.path.extend([os.path.join(base_dir, '../..')])
 from enricher.enrich import regulon_utils, regulon_enrichment
 
 def load_test_sif(sif='test.sif'):
-    return pd.read_csv(os.path.join(data_dir,sif), names = ['UpGene', 'Type', 'DownGene'], sep = '\t', header = None)
+    return pd.read_table(os.path.join(data_dir,sif), index_col=0)
 
 
 def load_test_expr(expr='test_expr.tsv'):
@@ -53,10 +56,14 @@ class RegulonUtilsTestCase(unittest.TestCase):
         expr = load_test_expr().T
         filt_sif = regulon_utils.filter_sif(sif)
         filtered_regulon = regulon_utils.prune_regulon(expr, filt_sif, 15)
-        regul_weights = regulon_weight_assignment('TP53', expr, filtered_regulon)
+        regul_weights = regulon_utils.regulon_weight_assignment('TP53', expr, filtered_regulon)
         self.assertSequenceEqual(regul_weights.shape,(606, 3))
         self.assertSequenceEqual(regul_weights.columns.tolist(), ['Target', 'MoA', 'likelihood'])
-        self.assertSequenceEqual(regul_weights.values.tolist(), ['AARS', 0.1724812122096268, 0.8717434402332361])
+        self.assertEqual(regul_weights.iloc[0,:].tolist()[0], 'AARS')
+        self.assertAlmostEqual(regul_weights.iloc[0,:].tolist()[1], 0.1724812122096268)
+        self.assertAlmostEqual(regul_weights.iloc[0,:].tolist()[2], 0.8717434402332361)
+
+
 
     def test_quantile_nes_score(self):
         sif = load_test_sif()

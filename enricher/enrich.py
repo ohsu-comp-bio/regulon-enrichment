@@ -1,6 +1,7 @@
+import warnings
+warnings.simplefilter("ignore", UserWarning)
 from sklearn.utils.validation import check_array
 from .features.expression_utils import log_norm
-import warnings
 import enricher.regulon.regulon_enrichment as regulon_enrichment
 import enricher.features.expression_utils as expression_utils
 import enricher.regulon.regulon_utils as regulon_utils

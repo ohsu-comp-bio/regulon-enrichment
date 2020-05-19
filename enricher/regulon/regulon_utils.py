@@ -1,3 +1,5 @@
+import warnings
+warnings.simplefilter("ignore", UserWarning)
 import pandas as pd
 import dill as pickle
 import functools
@@ -9,6 +11,7 @@ import scipy.stats as st
 import numpy as np
 from tqdm import tqdm
 import timeit
+
 
 
 def load_sif():
