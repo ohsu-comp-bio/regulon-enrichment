@@ -12,16 +12,15 @@ import os
 import sys
 import unittest
 import pandas as pd
+from enricher.enrich import expression_utils
 
 base_dir = os.path.dirname(__file__)
 data_dir = os.path.join(base_dir, "resources")
 sys.path.extend([os.path.join(base_dir, '../..')])
 
 
-from enricher.enrich import expression_utils
-
 def load_test_expr(expr='test_expr.tsv'):
-    return pd.read_csv(os.path.join(data_dir,expr), index_col=0, sep = '\t')
+    return pd.read_csv(os.path.join(data_dir, expr), index_col=0, sep = '\t')
 
 
 class ExpressionUtilsTestCase(unittest.TestCase):
@@ -38,8 +37,9 @@ class ExpressionUtilsTestCase(unittest.TestCase):
     def test_fit_and_transform(self):
         expr = load_test_expr()
         normed_expr = expression_utils.fit_and_transform_array(expr)
-        self.assertSequenceEqual(normed_expr.shape,(6, 16258))
+        self.assertSequenceEqual(normed_expr.shape, (6, 16258))
         self.assertAlmostEqual(normed_expr.mean().mean(), -0.13697546259217588)
+
 
 if __name__ == '__main__':
     unittest.main()

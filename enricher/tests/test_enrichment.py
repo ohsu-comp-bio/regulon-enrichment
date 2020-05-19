@@ -10,12 +10,7 @@ Author: Joey Estabrook <estabroj@ohsu.edu>
 import os
 import sys
 
-base_dir = os.path.dirname(__file__)
-data_dir = os.path.join(base_dir, "resources")
-sys.path.extend([os.path.join(base_dir, '../..')])
-
 from sklearn.utils.validation import check_array
-
 from enricher import enrich
 import enricher.regulon.regulon_enrichment as regulon_enrichment
 import enricher.features.expression_utils as expression_utils
@@ -30,18 +25,23 @@ import numpy as np
 import scipy.stats as st
 import functools
 
+base_dir = os.path.dirname(__file__)
+data_dir = os.path.join(base_dir, "resources")
+sys.path.extend([os.path.join(base_dir, '../..')])
+
 
 def load_test_sif(sif='test.sif'):
-    return pd.read_table(os.path.join(data_dir,sif), index_col=0)
+    return pd.read_table(os.path.join(data_dir, sif), index_col=0)
+
 
 def load_test_expr(expr='test_expr.tsv'):
-    return pd.read_csv(os.path.join(data_dir,expr), index_col=0, sep = '\t')
+    return pd.read_csv(os.path.join(data_dir, expr), index_col=0, sep = '\t')
 
 
 class EnrichTestCase(unittest.TestCase):
     def test_load_test_sif(self):
         sif = load_test_sif()
-        self.assertSequenceEqual(sif.shape,(1302, 3))
+        self.assertSequenceEqual(sif.shape, (1302, 3))
 
     def test_load_test_expr(self):
         expr = load_test_expr()
@@ -67,11 +67,12 @@ class EnrichTestCase(unittest.TestCase):
 
         enr.assign_weights()
         self.assertSequenceEqual(enr.regulon_weights.shape, (606, 3))
-        self.assertAlmostEqual(enr.regulon_weights.MoA.mean(),1.0364586150432187)
+        self.assertAlmostEqual(enr.regulon_weights.MoA.mean(), 1.0364586150432187)
 
         enr.calculate_enrichment()
         self.assertSequenceEqual(enr.regulators.tolist(), ['TP53'])
         self.assertSequenceEqual(enr.total_enrichment.shape, (6, 1))
+
 
 if __name__ == '__main__':
     unittest.main()

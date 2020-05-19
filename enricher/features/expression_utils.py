@@ -114,8 +114,7 @@ def load_scaled_expr(expr, cohort, norm_type='robust', feature = True, sample = 
         scaled_frame (:obj: `pandas DataFrame`) : pandas DataFrame containing scaled expression data of
             shape [n_samples, n_features]
     """
-    scaled_expr = os.path.join(dirname,
-                               '../experiments/{cohort}/data/{cohort}_{norm_type}_{feature}_{sample}_{thresh_filter}_{scale}_frame.pkl'.
+    scaled_expr = os.path.join(dirname, '../experiments/{cohort}/data/{cohort}_{norm_type}_{feature}_{sample}_{thresh_filter}_{scale}_frame.pkl'.
                                format(cohort = cohort, norm_type = norm_type, feature = feature, sample = sample, thresh_filter = thresh_filter, scale = scale))
 
     if os.path.isfile(scaled_expr):

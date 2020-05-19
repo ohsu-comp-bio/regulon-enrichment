@@ -69,7 +69,6 @@ def quantile_nes_score(regulon, expr):
         regulon (:obj: `pandas DataFrame`): Aracne-AP Regulon file in four column format i.e.
            Regulator,Target,MoA,likelihood
         expr (:obj: `pandas DataFrame`): pandas DataFrame of shape [n_feats, n_samps]
-        cohort (str) : name of cohort to associate with compiled regulon
 
     Returns:
         nes (:obj: `pandas DataFrame`): normalized enrichment scores per regulator
@@ -86,7 +85,6 @@ def quantile_nes_score(regulon, expr):
     t2 = pd.DataFrame(st.norm.ppf(t2.iloc[pos, ], loc=0, scale=1), columns=t2.columns, index=t2.index)
     sum1 = (mor * wts).dot(t2)
     nes = pd.DataFrame(sum1.values * nes_wt.values, columns=sum1.columns, index=sum1.index)
-
 
     return nes
 
@@ -237,11 +235,13 @@ def format_delta(down_reg_sub, up_reg_sub):
 
     up_reg_sub = pd.DataFrame(st.zscore(up_reg_sub, axis = 1), columns = up_reg_sub.columns, index = up_reg_sub.index)
     up_reg_normed = up_reg_sub - up_reg_sub.median()
-    up_reg_normed = (up_reg_normed.median(axis = 1) / up_reg_normed.median(axis = 1).max()).fillna(0.0).replace([np.inf,-np.inf],0.0)
+    up_reg_normed = (up_reg_normed.median(axis = 1) / up_reg_normed.median(axis = 1).max()).\
+        fillna(0.0).replace([np.inf, -np.inf], 0.0)
 
     down_reg_sub = pd.DataFrame(st.zscore(down_reg_sub), columns = down_reg_sub.columns, index = down_reg_sub.index)
     down_reg_normed = down_reg_sub + down_reg_sub.median()
-    down_reg_normed = (down_reg_normed.median(axis = 1) / down_reg_normed.median(axis = 1).max()).fillna(0.0).replace([np.inf,-np.inf],0.0)
+    down_reg_normed = (down_reg_normed.median(axis = 1) / down_reg_normed.median(axis = 1).max()).\
+        fillna(0.0).replace([np.inf, -np.inf], 0.0)
 
     delta = up_reg_normed - down_reg_normed
     delta = delta.to_frame()
@@ -252,8 +252,8 @@ def format_delta(down_reg_sub, up_reg_sub):
 
 
 def score_enrichment(regulator, expr, regulon, quant_nes):
-    """ Function to subset and generate regulator activity scores based on rank ordering of up-regulated and down-regulated
-     targets
+    """ Function to subset and generate regulator activity scores based
+        on rank ordering of up-regulated and down-regulated targets
 
     Args:
         regulator (str) : Regulator to subset expression frame by

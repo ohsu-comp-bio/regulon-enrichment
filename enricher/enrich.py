@@ -1,5 +1,4 @@
 import warnings
-warnings.simplefilter("ignore", UserWarning)
 from sklearn.utils.validation import check_array
 from .features.expression_utils import log_norm
 import enricher.regulon.regulon_enrichment as regulon_enrichment
@@ -11,6 +10,7 @@ import pandas as pd
 import numpy as np
 import scipy.stats as st
 import functools
+warnings.simplefilter("ignore", UserWarning)
 
 if __name__ == '__main__':
     DATA_PATH = os.path.join(os.getcwd(), 'data')
@@ -138,8 +138,10 @@ class Enrichment(object):
     def __str__(self):
         return """------\nCohort: {}\nn-features: {}\nn-samples: {}\nscaler: {}\nscaled: {}\nregulon threshold: {}\
             \nregulon nodes: {}\nregulon edges: {}\n------\n""".format(self.cohort, self.expr.shape[0],
-                self.expr.shape[1], self.scaler_type, self.scaled,self.regulon_size, len(self.regulon.UpGene.unique()),
-                self.regulon.shape[0])
+                                                                       self.expr.shape[1], self.scaler_type,
+                                                                       self.scaled, self.regulon_size,
+                                                                       len(self.regulon.UpGene.unique()),
+                                                                       self.regulon.shape[0])
 
     def __repr__(self):
         return """------\nCohort: {}\nn-features: {}\nn-samples: {}\nscaler: {}\nscaled: {}\nregulon threshold: {}\
