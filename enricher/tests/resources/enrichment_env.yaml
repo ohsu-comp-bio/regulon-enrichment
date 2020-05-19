@@ -192,7 +192,7 @@ dependencies:
   - statsmodels
   - suds-jurko
   - tbb
-  - unitest
+  - unittest2
   - terminado
   - testpath
   - tk
