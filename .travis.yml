@@ -10,7 +10,7 @@ install:
         - hash -r
         - conda config --set always_yes yes --set changeps1 no
         - conda update -q conda
-        - conda env create -f tests/resources/enrichment_env.yaml
+        - conda env create -f enricher/tests/resources/enrichment_env.yaml
         - source activate Enrich
 
 script:
