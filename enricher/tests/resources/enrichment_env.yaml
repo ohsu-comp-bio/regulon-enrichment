@@ -6,7 +6,6 @@ channels:
 dependencies:
   - alabaster
   - appdirs
-  - appnope
   - asn1crypto
   - attrs
   - autograd
@@ -104,7 +103,6 @@ dependencies:
   - libxml2
   - libxslt
   - llvm
-  - llvm-lto-tapi
   - llvm-meta
   - llvm-openmp
   - llvmdev
@@ -164,7 +162,6 @@ dependencies:
   - python
   - python-dateutil
   - python-levenshtein
-  - python.app
   - python_abi
   - pytz
   - pyzmq
