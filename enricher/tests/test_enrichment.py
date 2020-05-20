@@ -9,6 +9,9 @@ Author: Joey Estabrook <estabroj@ohsu.edu>
 
 import os
 import sys
+base_dir = os.path.dirname(__file__)
+data_dir = os.path.join(base_dir, "resources")
+sys.path.extend([os.path.join(base_dir, '../..')])
 
 from sklearn.utils.validation import check_array
 from enricher import enrich
@@ -25,9 +28,7 @@ import numpy as np
 import scipy.stats as st
 import functools
 
-base_dir = os.path.dirname(__file__)
-data_dir = os.path.join(base_dir, "resources")
-sys.path.extend([os.path.join(base_dir, '../..')])
+
 
 
 def load_test_sif(sif='test.sif'):
@@ -45,7 +46,7 @@ class EnrichTestCase(unittest.TestCase):
 
     def test_load_test_expr(self):
         expr = load_test_expr()
-        self.assertSequenceEqual(expr.shape, (16297, 6))
+        self.assertSequenceEqual(expr.shape, (8723, 6))
 
     def test_enrichment(self):
         sif = load_test_sif()
@@ -66,8 +67,8 @@ class EnrichTestCase(unittest.TestCase):
         self.assertEqual(enr.scaled, True)
 
         enr.assign_weights()
-        self.assertSequenceEqual(enr.regulon_weights.shape, (606, 3))
-        self.assertAlmostEqual(enr.regulon_weights.MoA.mean(), 1.0364586150432187)
+        self.assertSequenceEqual(enr.regulon_weights.shape, (433, 3))
+        self.assertAlmostEqual(enr.regulon_weights.MoA.mean(), 1.1555032640512617)
 
         enr.calculate_enrichment()
         self.assertSequenceEqual(enr.regulators.tolist(), ['TP53'])

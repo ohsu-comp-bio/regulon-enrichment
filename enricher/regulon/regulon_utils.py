@@ -196,7 +196,9 @@ def prune_regulon(expr, regulon, regulon_size):
 
     expr_filtered_regulon = regulon[((regulon.UpGene.isin(expr.columns)) & (regulon.DownGene.isin(expr.columns)))]
     expr_filtered_regulon.set_index('UpGene', inplace=True)
-    filtered_regulon = expr_filtered_regulon[(expr_filtered_regulon.index.value_counts() >= regulon_size)]
+    idx = (expr_filtered_regulon.index.value_counts() >= regulon_size)
+    filt_idx = idx[idx==True]
+    filtered_regulon = expr_filtered_regulon.loc[filt_idx.index]
     filtered_regulon.reset_index(inplace=True)
 
     return filtered_regulon
