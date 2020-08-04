@@ -15,11 +15,10 @@ Load -omic datasets
 ### `enricher.regulon` ###
 Regulon utilities
 
-Dependencies
+# Dependencies
+
+**regulon-enrichment** requires:
 ~~~~~~~~~~~~
-
-regulon-enrichment requires:
-
 - Python (>= 3.6)
 - scikit-learn (>= 0.21.3)
 - NumPy (>= 1.17.3)
@@ -29,13 +28,13 @@ regulon-enrichment requires:
 - dill (>= 0.3.1.1)
 ~~~~~~~~~~~~
 
-#User installation
+# User installation
 ~~~~~~~~~~~~~~~~~
 
 If you already have a working installation of numpy and scipy,
-the easiest way to install scikit-learn is using ``pip``   ::
+the easiest way to install regulon-enrichment is using ``pip``   ::
 
-    pip install -U regulon-enrichment
+    pip install pip install regulon-enrichment==0.0.2b0
 
 or ``conda``::
 

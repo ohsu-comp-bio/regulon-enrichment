@@ -1,4 +1,4 @@
-name: Enrich
+name: regulon-enrichment
 channels:
   - defaults
   - bioconda
