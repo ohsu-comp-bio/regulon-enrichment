@@ -34,7 +34,7 @@ Regulon utilities
 If you already have a working installation of numpy and scipy,
 the easiest way to install regulon-enrichment is using ``pip``   ::
 
-    pip install pip install regulon-enrichment==0.0.2b0
+    pip install regulon-enrichment==0.0.2b0
 
 or ``conda``::
 
