@@ -4,7 +4,7 @@
 # Enrich
 
 
-Enrich is a Python module used to predict the activity of regulatory proteins from RNAseq data.
+**regulon-enrichment** is a Python module used to predict the activity of regulatory proteins from RNAseq data.
 
 Enrich submodules:
 
@@ -12,6 +12,31 @@ Enrich submodules:
 Load -omic datasets
 
 
-
 ### `enricher.regulon` ###
 Regulon utilities
+
+Dependencies
+~~~~~~~~~~~~
+
+regulon-enrichment requires:
+
+- Python (>= 3.6)
+- scikit-learn (>= 0.21.3)
+- NumPy (>= 1.17.3)
+- SciPy (>= 1.3.1)
+- pandas (>= 0.25.3)
+- tqdm (>= 4.38.0)
+- dill (>= 0.3.1.1)
+~~~~~~~~~~~~
+
+#User installation
+~~~~~~~~~~~~~~~~~
+
+If you already have a working installation of numpy and scipy,
+the easiest way to install scikit-learn is using ``pip``   ::
+
+    pip install -U regulon-enrichment
+
+or ``conda``::
+
+    conda install -c conda-forge regulon-enrichment
