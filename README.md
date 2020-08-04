@@ -38,4 +38,4 @@ the easiest way to install regulon-enrichment is using ``pip``   ::
 
 or ``conda``::
 
-    conda install -c conda-forge regulon-enrichment
+    conda install -c estabroj89 regulon-enrichment
