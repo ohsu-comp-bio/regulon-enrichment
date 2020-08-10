@@ -9,6 +9,7 @@ from sklearn.utils.validation import check_array
 import enricher.regulon.regulon_enrichment as regulon_enrichment
 import enricher.features.expression_utils as expression_utils
 import enricher.regulon.regulon_utils as regulon_utils
+import argparse
 
 warnings.simplefilter("ignore", UserWarning)
 
@@ -275,3 +276,52 @@ class Enrichment(object):
                             tqdm(self.regulators)))
 
         self.total_enrichment = pd.concat(nes_list, axis=1)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        "Infer transcription factor activity from gene expression data utilizing pathway and molecular interactions "
+        "and mechanisms available through Pathway Commons."
+    )
+
+    parser.add_argument('cohort', type=str, help="which TCGA cohort to use")
+    parser.add_argument('expr', type=str, help="which tab delimited expression matrix to use "
+                                               "shape : [n_features, n_samples]"
+                                               "units : TPM, RPKM")
+    parser.add_argument('out_dir', type=str, help="output directory", default="{}_enrichment".format())
+
+    parser.add_argument('regulon', type=str, help="optional regulon containing weight interactions between "
+                                                  "regulator and downstream members of its regulon"
+                                                  "shape : [len(Target), ['Regulator','Target','MoA','likelihood']",
+                                                  default=None)
+    parser.add_argument('regulon_size', type=int, help="number of downstream interactions required for a given "
+                                                       "regulator in order to calculate enrichment score", default=15)
+    parser.add_argument('sec_intx', type=str, help="path to pre-compiled serialized secondary "
+                                                         "interaction network", default=sec_intx_file)
+
+    parser.add_argument('scaler_type', type=str, help="Scaler to normalized features/samples by: "
+                                                      "standard | robust | minmax | quant", default='robust')
+    parser.add_argument('thresh_filter', type=float, help="Prior to normalization remove features that have a standard "
+                                                        "deviation per feature less than {thresh_filter}",
+                                                        default=0.1)
+
+    # parse command line arguments
+    args = parser.parse_args()
+
+    expr_matrix = pd.from_table(args.expr,index_col=0)
+
+
+    enr_obj = Enrichment(cohort=args.cohort, expr=expr_matrix, regulon=args.regulon,
+                         regulon_size=args.regulon, sec_intx=args.sec_intx,
+                         thresh_filter=args.thresh_filter)
+
+    enr_obj.scale(scaler_type=args.scaler_type, thresh_filter=args.thresh_filter)
+
+    enr_obj.calculate_enrichment()
+
+    regulon_utils.ensure_dir(args.out_dir)
+    regulon_utils.write_pickle(enr_obj, args.out_dir)
+    enr_obj.total_enrichment.to_csv(os.path.join(args.out_dir,'{}_regulon_enrichment.tsv'.format(args.cohort)),sep='\t')
+    print('Complete')
+
+

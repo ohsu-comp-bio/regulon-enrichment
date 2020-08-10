@@ -6,7 +6,7 @@
 
 **regulon-enrichment** is a Python module used to predict the activity of regulatory proteins from RNAseq data.
 
-Enrich submodules:
+*regulon-enrichment* submodules:
 
 ### `enricher.features` ###
 Load -omic datasets
@@ -39,3 +39,14 @@ the easiest way to install regulon-enrichment is using ``pip``   ::
 or ``conda``::
 
     conda install -c estabroj89 regulon-enrichment
+
+
+# Overview
+
+This method leverages pathway information and gene expression data to produce regulon-based protein activity scores. 
+Our method tests for positional shifts in experimental-evidence supported networks consisting of transcription factors 
+and their downstream signaling pathways when projected onto a rank-sorted gene-expression signature. A regulatory gene’s
+expression is generally a poor proxy for its protein’s behavior. We shift our focus to the collective enrichment of a 
+regulatory protein’s target genes (its “regulon”). We extract protein-protein edges from Pathway Commons to build 
+regulatory networks. 
+
