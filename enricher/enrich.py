@@ -288,40 +288,50 @@ def main():
     parser.add_argument('expr', type=str, help="which tab delimited expression matrix to use "
                                                "shape : [n_features, n_samples]"
                                                "units : TPM, RPKM")
-    parser.add_argument('out_dir', type=str, help="output directory", default="{}_enrichment".format())
+    parser.add_argument('out_dir', type=str, help="output directory")
 
-    parser.add_argument('regulon', type=str, help="optional regulon containing weight interactions between "
+    parser.add_argument('--regulon', type=str, help="optional regulon containing weight interactions between "
                                                   "regulator and downstream members of its regulon"
                                                   "shape : [len(Target), ['Regulator','Target','MoA','likelihood']",
                                                   default=None)
-    parser.add_argument('regulon_size', type=int, help="number of downstream interactions required for a given "
+    parser.add_argument('--regulon_size', type=int, help="number of downstream interactions required for a given "
                                                        "regulator in order to calculate enrichment score", default=15)
-    parser.add_argument('sec_intx', type=str, help="path to pre-compiled serialized secondary "
+    parser.add_argument('--sec_intx', type=str, help="path to pre-compiled serialized secondary "
                                                          "interaction network", default=sec_intx_file)
 
-    parser.add_argument('scaler_type', type=str, help="Scaler to normalized features/samples by: "
+    parser.add_argument('--scaler_type', type=str, help="Scaler to normalized features/samples by: "
                                                       "standard | robust | minmax | quant", default='robust')
-    parser.add_argument('thresh_filter', type=float, help="Prior to normalization remove features that have a standard "
+    parser.add_argument('--thresh_filter', type=float, help="Prior to normalization remove features that have a standard "
                                                         "deviation per feature less than {thresh_filter}",
                                                         default=0.1)
-
     # parse command line arguments
     args = parser.parse_args()
 
-    expr_matrix = pd.from_table(args.expr,index_col=0)
+    expr_matrix = pd.read_table(args.expr,index_col=0)
 
 
     enr_obj = Enrichment(cohort=args.cohort, expr=expr_matrix, regulon=args.regulon,
-                         regulon_size=args.regulon, sec_intx=args.sec_intx,
+                         regulon_size=args.regulon_size, sec_intx=args.sec_intx,
                          thresh_filter=args.thresh_filter)
 
+    print(enr_obj)
+    print('\nScaling data...\n')
     enr_obj.scale(scaler_type=args.scaler_type, thresh_filter=args.thresh_filter)
+    print('\nData scaled!\n')
 
+    print('\nAssigning weights...\n')
+    enr_obj.assign_weights()
+    print('\nWeights assigned!\n')
+
+    print('\nCalculating enrichment...\n')
     enr_obj.calculate_enrichment()
+    print('\nEnrichment scores calculated!\n')
 
     regulon_utils.ensure_dir(args.out_dir)
-    regulon_utils.write_pickle(enr_obj, args.out_dir)
+    regulon_utils.write_pickle(enr_obj, os.path.join(args.out_dir,'{}_enrichment.pkl'.format(args.cohort)))
     enr_obj.total_enrichment.to_csv(os.path.join(args.out_dir,'{}_regulon_enrichment.tsv'.format(args.cohort)),sep='\t')
     print('Complete')
 
 
+if __name__ == "__main__":
+    main()

@@ -166,7 +166,8 @@ def rank_and_order_total(expr_sub, regulator, regulon, ascending, expr):
 
     ranks = total_ranked.loc[:, expr_sub.columns]
 
-    weighted_ranks = pd.np.multiply(ranks, moa_frame).sum(axis = 1).to_frame()
+    # weighted_ranks = pd.np.multiply(ranks, moa_frame).sum(axis = 1).to_frame()
+    weighted_ranks = np.multiply(ranks, moa_frame).sum(axis = 1).to_frame()
 
     # Store minimum rank for samples - this value is equivalent to the total number of targets in expr_sub i.e. if all
     # genes for a particular sample rank first the rank_min = 1.0 * #genes

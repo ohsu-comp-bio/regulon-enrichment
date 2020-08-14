@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(name='regulon-enrichment',
-      version='0.2.0b',
+      version='0.3.0a',
       description="""This package leverages pathway information and gene expression data to produce
         regulon-based protein activity scores""",
       long_description = """regulon-enrichment leverages pathway information and gene expression data to produce
