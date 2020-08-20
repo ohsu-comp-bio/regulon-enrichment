@@ -8,7 +8,7 @@ setuptools.setup(name='regulon-enrichment',
         regulon-based protein activity scores""",
       author='Joseph Estabrook',
       author_email='estabroj@ohsu.edu',
-      entry_points={'console_scripts':['enrich=regulon-enrichment.enricher.enrich:main']},
+      entry_points={'console_scripts':['enrich=enricher.enrich:main']},
       packages=setuptools.find_packages(
           exclude=["enricher.tests.*", "enricher.tests"]),
       url = 'https://github.com/JEstabrook/regulon-enrichment',
