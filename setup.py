@@ -11,7 +11,11 @@ setuptools.setup(name='regulon-enrichment',
       entry_points={'console_scripts':['enrich=enricher.enrich:main']},
       packages=setuptools.find_packages(
           exclude=["enricher.tests.*", "enricher.tests", "enricher.plot"]),
-      package_data={'regulon-enrichment':['data/*']},
+      data_files=[('data',['data/Homo_sapiens.GRCh38.95.gtf.gz',
+                           'data/Mus_musculus.GRCm38.95.gtf.gz',
+                           'data/PathwayCommons9.All.hgnc.sif.gz',
+                           'data/primary_intx_regulon.pkl',
+                           'secondary_intx_regulon.pkl'])]
       url = 'https://github.com/JEstabrook/regulon-enrichment',
       classifiers = [
          "Programming Language :: Python :: 3",
