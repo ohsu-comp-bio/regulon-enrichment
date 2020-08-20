@@ -11,7 +11,8 @@ setuptools.setup(name='regulon-enrichment',
       entry_points={'console_scripts':['enrich=enricher.enrich:main']},
       packages=setuptools.find_packages(
           exclude=["enricher.tests.*", "enricher.tests"]),
-      data_files=[('data',['data/*'])],
+      package_data={'regulon-enrichment':['data/*']},
+      include_package_data=True,
       url = 'https://github.com/JEstabrook/regulon-enrichment',
       classifiers = [
          "Programming Language :: Python :: 3",
