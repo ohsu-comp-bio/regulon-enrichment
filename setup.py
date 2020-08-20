@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(name='regulon-enrichment',
-      version='0.3.7a0',
+      version='0.3.8a0',
       description="""This package leverages pathway information and gene expression data to produce
         regulon-based protein activity scores""",
       long_description = """regulon-enrichment leverages pathway information and gene expression data to produce
@@ -15,7 +15,7 @@ setuptools.setup(name='regulon-enrichment',
                            'data/Mus_musculus.GRCm38.95.gtf.gz',
                            'data/PathwayCommons9.All.hgnc.sif.gz',
                            'data/primary_intx_regulon.pkl',
-                           'secondary_intx_regulon.pkl'])]
+                           'secondary_intx_regulon.pkl'])],
       url = 'https://github.com/JEstabrook/regulon-enrichment',
       classifiers = [
          "Programming Language :: Python :: 3",
