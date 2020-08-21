@@ -87,15 +87,17 @@ enrich
 `thresh_filter` : Prior to normalization remove features that have a standard deviation per feature less than `{thresh_filter}`, `default=0.1`)
 
 
-#Computing regulon enrichment scores
+# Computing regulon enrichment scores
 
 To quantify the regulon enrichment for a given dataset, the command line script `enrich` is used.
 `enich`
 
 Use --help argument to view options
+
 `enrich --help`
 
 Enrich requires three positional arguments: `cohort`,`expr`, `out_dir`
+
 `enrich cohort expr out_dir [regulon] [regulon_size] [sec_intx] [scaler_type] [thresh_filter] ` 
 
 It is recommended to run enrich with the default parameters. 
@@ -103,9 +105,5 @@ It is recommended to run enrich with the default parameters.
 
 `enrich test tests/resources/test_expr.tsv test_enrichment_scores`
 
-The command above will generate enrichment scores for the unittest dataset `test_expr.tsv` and will generate and store 
-the output under `test_enrichment_scores/`. In this directory `test_enrichment_scores/`, both the serialized Enrichment
-object `test_enrichment.pkl` and a tsv of the enrichment scores,`test_regulon_enrichment.tsv` will be found. The 
-`enrichment.tsv` file be shaped : `[n_samples, n_regulators]`, where `n_samples` refers to the original number of samples 
-provided in `expr`, while `n_regulators` will be determined based on the overlapping features present in the `expr` 
-dataset and the `regulon_size` parameter. 
+The command above will generate enrichment scores for the unittest dataset `test_expr.tsv` and will generate and store the output under `test_enrichment_scores/`. In this directory `test_enrichment_scores/`, both the serialized Enrichment
+object `test_enrichment.pkl` and a tsv of the enrichment scores,`test_regulon_enrichment.tsv` will be found. The `enrichment.tsv` file be shaped : `[n_samples, n_regulators]`, where `n_samples` refers to the original number of samples provided in `expr`, while `n_regulators` will be determined based on the overlapping features present in the `expr` dataset and the `regulon_size` parameter. 
