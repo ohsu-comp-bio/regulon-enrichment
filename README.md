@@ -3,7 +3,6 @@
 
 # Enrich
 
-
 **regulon-enrichment** is a Python module used to predict the activity of regulatory proteins from RNAseq data.
 
 *regulon-enrichment* submodules:
@@ -90,7 +89,6 @@ enrich
 # Computing regulon enrichment scores
 
 To quantify the regulon enrichment for a given dataset, the command line script `enrich` is used.
-`enich`
 
 Use --help argument to view options
 
@@ -105,5 +103,6 @@ It is recommended to run enrich with the default parameters.
 
 `enrich test tests/resources/test_expr.tsv test_enrichment_scores`
 
-The command above will generate enrichment scores for the unittest dataset `test_expr.tsv` and will generate and store the output under `test_enrichment_scores/`. In this directory `test_enrichment_scores/`, both the serialized Enrichment
-object `test_enrichment.pkl` and a tsv of the enrichment scores,`test_regulon_enrichment.tsv` will be found. The `enrichment.tsv` file be shaped : `[n_samples, n_regulators]`, where `n_samples` refers to the original number of samples provided in `expr`, while `n_regulators` will be determined based on the overlapping features present in the `expr` dataset and the `regulon_size` parameter. 
+The command above will generate enrichment scores for the unittest dataset `test_expr.tsv` and will generate and store the output under `test_enrichment_scores/`. In this directory `test_enrichment_scores/`, both the serialized Enrichment object `test_enrichment.pkl` and a tsv of the enrichment scores,`test_regulon_enrichment.tsv` will be found. 
+
+The `enrichment.tsv` file be shaped : `[n_samples, n_regulators]`, where `n_samples` refers to the original number of samples provided in `expr`, while `n_regulators` will be determined based on the overlapping features present in the `expr` dataset and the `regulon_size` parameter. 
