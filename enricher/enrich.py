@@ -222,8 +222,12 @@ class Enrichment(object):
 
         """
         self.scaler_type = scaler_type
-        self.expr = self._preprocess_data(self.expr, self.scaler_type, thresh_filter)
-        self.scaled = True
+        if scaler_type == None:
+            warnings.warn('Proceeding without scaling dataset!')
+            self.expr = self.expr.T
+        else:
+            self.expr = self._preprocess_data(self.expr, self.scaler_type, thresh_filter)
+            self.scaled = True
 
     def assign_weights(self):
         """
