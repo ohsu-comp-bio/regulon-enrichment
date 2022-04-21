@@ -12,7 +12,7 @@ import enricher.regulon.regulon_utils as regulon_utils
 import argparse
 
 warnings.simplefilter("ignore", UserWarning)
-
+test = 'test'
 if __name__ == '__main__':
     DATA_PATH = os.path.join(os.getcwd(), 'data')
 else:
@@ -73,6 +73,8 @@ class Enrichment(object):
         self.regulon_weights = None
         self.thresh_filter = thresh_filter
         self.total_enrichment = None
+        self.delta = None
+        self.local_enrichment = None
         self.regulators = None
         self.quant_nes = None
 
@@ -171,8 +173,10 @@ class Enrichment(object):
         idx = (expr_filtered_regulon.index.value_counts() >= regulon_size)
 
         filtered_regulon = expr_filtered_regulon.loc[idx[idx == True].index].reset_index()
+        edges = list(set(filtered_regulon.UpGene) | set(filtered_regulon.DownGene))
+        sub_expr = expr.loc[:,edges]
 
-        return filtered_regulon
+        return filtered_regulon, sub_expr
 
     @staticmethod
     def _structure_weights(regulator, pruned_regulon, f_statistics, r_frame, p_frame):
@@ -237,7 +241,8 @@ class Enrichment(object):
         if not self.scaled:
             warnings.warn('Assigning interaction weights without scaling dataset!')
 
-        pruned_regulon = self._prune_regulon(self.expr, self.regulon, self.regulon_size)
+        pruned_regulon, sub_expr = self._prune_regulon(self.expr, self.regulon, self.regulon_size)
+        self.expr = sub_expr
         # noinspection PyTypeChecker
         r, p = regulon_utils.spearmanr(self.expr)
 
@@ -273,13 +278,15 @@ class Enrichment(object):
         self.regulators = self.regulon_weights.index.unique()
 
         print('--- Calculating regulon enrichment scores ---')
-        nes_list = list(map(functools.partial(regulon_enrichment.score_enrichment,
+        nes_list, local_enrich_list, delta_list = zip(*list(map(functools.partial(regulon_enrichment.score_enrichment,
                                               expr=self.expr,
                                               regulon=self.regulon_weights,
                                               quant_nes=quant_nes),
-                            tqdm(self.regulators)))
+                            tqdm(self.regulators))))
 
         self.total_enrichment = pd.concat(nes_list, axis=1)
+        self.local_enrichment = pd.concat(local_enrich_list, axis=1)
+        self.delta = pd.concat(delta_list, axis=1)
 
 
 def main():

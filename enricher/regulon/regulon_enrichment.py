@@ -278,12 +278,16 @@ def score_enrichment(regulator, expr, regulon, quant_nes):
 
     zframe = format_nes_frame(down_reg_ordered, up_reg_ordered, regulator)
     delta = format_delta(down_reg_sub, up_reg_sub)
+    delta_ = delta.copy()
+    delta_.columns = [regulator]
+
+    local_enrich = zframe.copy()
 
     zframe[regulator] = zframe.values + delta.values
 
     enrichment_score = zframe[regulator] + quant_nes.loc[regulator]
 
-    return enrichment_score
+    return enrichment_score, local_enrich, delta_
 
 
 def logger(**kwargs):
