@@ -1,4 +1,3 @@
-
 import warnings
 import os
 import functools
@@ -12,7 +11,7 @@ import enricher.regulon.regulon_utils as regulon_utils
 import argparse
 
 warnings.simplefilter("ignore", UserWarning)
-test = 'test'
+
 if __name__ == '__main__':
     DATA_PATH = os.path.join(os.getcwd(), 'data')
 else:
@@ -102,7 +101,7 @@ class Enrichment(object):
                    self.regulon.shape[0])
 
     @staticmethod
-    def _preprocess_data(expr, scaler_type='robust', thresh_filter=0.1):
+    def _preprocess_data(expr, scaler_type='robust', thresh_filter=0.0):
         """ Centers expression data based on a specified data scaler algorithm
 
         Args:
@@ -135,10 +134,8 @@ class Enrichment(object):
         scaler = scaler_opt[scaler_type]
 
         # Transpose frame to correctly orient frame for scaling and machine learning algorithms
-        print('--- log2 normalization ---')
 
         expr_t = expr[(expr.std(axis=1) > thresh_filter)].T
-        expr_lt = expression_utils.log_norm(expr_t)
 
         print('--- Centering features with {} scaler ---'.format(scaler_type))
         scaled_frame = pd.DataFrame(scaler.fit_transform(expr_lt),
