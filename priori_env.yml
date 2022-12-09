@@ -1,4 +1,4 @@
-name: enrich_no_delta_env
+name: priori_env
 channels:
   - bioconda
   - conda-forge

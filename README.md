@@ -43,7 +43,7 @@ git clone https://github.com/ohsu-comp-bio/regulon-enrichment.git
 
 Open the **regulon_enrichemnt** folder. Create a conda environment with the dependencies needed to run Priori
 ```
-conda create -f priori_env.yml
+conda env create -f priori_env.yml
 ```
 
 Once the environment has been built, activate it

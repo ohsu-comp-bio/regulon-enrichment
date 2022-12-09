@@ -31,7 +31,7 @@ class OmicError(Error):
     """Raised when duplications in omic features or samples are detected"""
 
 
-class Enrichment(object):
+class Priori(object):
     """Base enrichment class for predicting regulon enrichment from -omic datasets.
 
     Args:
@@ -313,7 +313,7 @@ def main():
     expr_matrix = pd.read_table(args.expr,index_col=0)
 
 
-    enr_obj = Enrichment(expr=expr_matrix, regulon=args.regulon,
+    enr_obj = Priori(expr=expr_matrix, regulon=args.regulon,
                          regulon_size=args.regulon_size, sec_intx=args.sec_intx,
                          thresh_filter=args.thresh_filter)
 
@@ -328,7 +328,7 @@ def main():
 
     print('\nCalculating enrichment...\n')
     enr_obj.calculate_enrichment()
-    print('\nEnrichment scores calculated!\n')
+    print('\nPriori activity scores calculated!\n')
 
     regulon_utils.ensure_dir(args.out_dir)
     regulon_utils.write_pickle(enr_obj, os.path.join(args.out_dir,'priori_object.pkl'))
