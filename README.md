@@ -36,14 +36,20 @@ and their downstream signaling pathways when projected onto a rank-sorted gene-e
 
 ## Invoking Priori from the command line
 
-Initialize github in the directory where you want to download Priori. Clone the Priori Github folder using ::
-    git clone https://github.com/ohsu-comp-bio/regulon-enrichment.git
+Initialize github in the directory where you want to download Priori. Clone the Priori Github folder using
+```
+git clone https://github.com/ohsu-comp-bio/regulon-enrichment.git
+```
 
-Open the **regulon_enrichemnt** folder. Create a conda environment with the dependencies needed to run Priori ::
-    conda create -f priori_env.yml
+Open the **regulon_enrichemnt** folder. Create a conda environment with the dependencies needed to run Priori
+```
+conda create -f priori_env.yml
+```
 
-Once the environment has been built, activate it ::
-    conda activate priori_env
+Once the environment has been built, activate it
+```
+conda activate priori_env
+```
 
 Open the **enricher** folder. Set this path to your PATH variable. After sourcing your bashrc script, you should be able to run Priori using ::
     enrich
