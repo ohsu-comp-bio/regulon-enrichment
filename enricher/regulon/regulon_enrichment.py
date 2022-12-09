@@ -221,37 +221,6 @@ def format_nes_frame(down_reg_ordered, up_reg_ordered, regulator):
     return zframe
 
 
-def format_delta(down_reg_sub, up_reg_sub):
-    """ Take the mean difference from up/down - regulated targets and scale
-
-    Args:
-        down_reg_sub (:obj: `pandas DataFrame`) : pandas DataFrame of down regulated targets regulator normed expression
-        up_reg_sub (:obj: `pandas DataFrame`) : pandas DataFrame of up regulated targets regulator normed expression
-
-    Returns:
-        delta (:obj: `pandas DataFrame`) : pandas DataFrame of the mean delta difference of regulator targets
-        per sample
-
-    """
-
-    up_reg_sub = pd.DataFrame(st.zscore(up_reg_sub, axis = 1), columns = up_reg_sub.columns, index = up_reg_sub.index)
-    up_reg_normed = up_reg_sub - up_reg_sub.median()
-    up_reg_normed = (up_reg_normed.median(axis = 1) / up_reg_normed.median(axis = 1).max()).\
-        fillna(0.0).replace([np.inf, -np.inf], 0.0)
-
-    down_reg_sub = pd.DataFrame(st.zscore(down_reg_sub), columns = down_reg_sub.columns, index = down_reg_sub.index)
-    down_reg_normed = down_reg_sub + down_reg_sub.median()
-    down_reg_normed = (down_reg_normed.median(axis = 1) / down_reg_normed.median(axis = 1).max()).\
-        fillna(0.0).replace([np.inf, -np.inf], 0.0)
-
-    delta = up_reg_normed - down_reg_normed
-    delta = delta.to_frame()
-    delta.columns = ['Delta']
-    delta['Delta'] = st.zscore(delta)
-
-    return delta
-
-
 def score_enrichment(regulator, expr, regulon, quant_nes):
     """ Function to subset and generate regulator activity scores based
         on rank ordering of up-regulated and down-regulated targets
@@ -277,17 +246,14 @@ def score_enrichment(regulator, expr, regulon, quant_nes):
     up_reg_ordered = rank_and_order_total(up_reg_sub, regulator, regulon, ascending=True, expr=expr)
 
     zframe = format_nes_frame(down_reg_ordered, up_reg_ordered, regulator)
-    delta = format_delta(down_reg_sub, up_reg_sub)
-    delta_ = delta.copy()
-    delta_.columns = [regulator]
 
     local_enrich = zframe.copy()
 
-    zframe[regulator] = zframe.values + delta.values
+    zframe[regulator] = zframe.values
 
     enrichment_score = zframe[regulator] + quant_nes.loc[regulator]
 
-    return enrichment_score, local_enrich, delta_
+    return enrichment_score, local_enrich
 
 
 def logger(**kwargs):

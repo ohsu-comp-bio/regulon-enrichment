@@ -5,9 +5,9 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from sklearn.utils.validation import check_array
-import enricher.regulon.regulon_enrichment as regulon_enrichment
-import enricher.features.expression_utils as expression_utils
-import enricher.regulon.regulon_utils as regulon_utils
+import regulon.regulon_enrichment as regulon_enrichment
+import features.expression_utils as expression_utils
+import regulon.regulon_utils as regulon_utils
 import argparse
 
 warnings.simplefilter("ignore", UserWarning)
@@ -72,7 +72,6 @@ class Enrichment(object):
         self.regulon_weights = None
         self.thresh_filter = thresh_filter
         self.total_enrichment = None
-        self.delta = None
         self.local_enrichment = None
         self.regulators = None
         self.quant_nes = None
@@ -277,7 +276,7 @@ class Enrichment(object):
         self.regulators = self.regulon_weights.index.unique()
 
         print('--- Calculating regulon enrichment scores ---')
-        nes_list, local_enrich_list, delta_list = zip(*list(map(functools.partial(regulon_enrichment.score_enrichment,
+        nes_list, local_enrich_list = zip(*list(map(functools.partial(regulon_enrichment.score_enrichment,
                                               expr=self.expr,
                                               regulon=self.regulon_weights,
                                               quant_nes=quant_nes),
@@ -285,7 +284,6 @@ class Enrichment(object):
 
         self.total_enrichment = pd.concat(nes_list, axis=1)
         self.local_enrichment = pd.concat(local_enrich_list, axis=1)
-        self.delta = pd.concat(delta_list, axis=1)
 
 
 def main():
