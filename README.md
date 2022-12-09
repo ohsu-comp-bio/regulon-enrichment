@@ -1,11 +1,10 @@
 ![Build Status](https://travis-ci.com/JEstabrook/regulon-enrichment.svg?token=ZRDWBWe9sXCivP1NrZwq&branch=master)  [![](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/release/python-367) ![t](https://img.shields.io/badge/license-MIT-nrightgreen.svg) ![t](https://img.shields.io/badge/status-stable-nrightgreen.svg) ![t](https://zenodo.org/badge/179752059.svg)
 
+# Priori
 
-# Enrich
+Priori is a Python module used to predict the activity of regulatory proteins from RNAseq data.
 
-**regulon-enrichment** is a Python module used to predict the activity of regulatory proteins from RNAseq data.
-
-*regulon-enrichment* submodules:
+Priori submodules:
 
 ### `enricher.features` ###
 Load -omic datasets
@@ -16,7 +15,7 @@ Regulon utilities
 
 # Dependencies
 
-**regulon-enrichment** requires:
+**Priori** requires:
 ~~~~~~~~~~~~
 - Python (>= 3.6)
 - scikit-learn (>= 0.21.3)
@@ -27,45 +26,31 @@ Regulon utilities
 - dill (>= 0.3.1.1)
 ~~~~~~~~~~~~
 
-# User installation
-~~~~~~~~~~~~~~~~~
-
-If you already have a working installation of numpy and scipy,
-the easiest way to install regulon-enrichment is using ``conda``   ::
-
-    conda install -c estabroj89 regulon-enrichment
-
-or ``pip``::
-
-    pip install regulon-enrichment==0.0.2b0
-
-~~~~~~~~~~~~~~~~~
 # Overview
 
-This method leverages pathway information and gene expression data to produce regulon-based protein activity scores. 
+Priori leverages pathway information and gene expression data to produce regulon-based protein activity scores. 
 Our method tests for positional shifts in experimental-evidence supported networks consisting of transcription factors 
 and their downstream signaling pathways when projected onto a rank-sorted gene-expression signature. 
 
-This regulon enrichment method utilizes pathway and molecular interactions and mechanisms available through Pathway 
-Commons to accurately infer aberrant transcription factor activity from gene expression data.
+# Running Priori
 
-# Running regulon-enrichment
-## Invoking enrich from the command line
+## Invoking Priori from the command line
 
-When installing the regulon-enrichment package, the set of scripts that make up to inteface to regulon-enrichment will 
-automatically be placed as an executables in your path, so that you can refer to these without modifying your shell 
-environment. For example, if you install regulon-enrichment using conda, then enrich will become available on the path, 
-and  can be run as:
+Initialize github in the directory where you want to download Priori. Clone the Priori Github folder using ::
+    git clone https://github.com/ohsu-comp-bio/regulon-enrichment.git
 
-~~~~~~~~~~~~~~~~~
-enrich
-~~~~~~~~~~~~~~~~~
+Open the **regulon_enrichemnt** folder. Create a conda environment with the dependencies needed to run Priori ::
+    conda create -f priori_env.yml
 
-# Enrich parameters
+Once the environment has been built, activate it ::
+    conda activate priori_env
+
+Open the **enricher** folder. Set this path to your PATH variable. After sourcing your bashrc script, you should be able to run Priori using ::
+    enrich
+
+# Priori parameters
 
 ## Required parameters
-
-`cohort` : which cohort to use; this information will be retained in the serialized Enrichment class
 
 `expr` : which tab delimited expression matrix to use shape : `[n_features, n_samples]`, units : `TPM, RPKM`
 
@@ -94,14 +79,13 @@ Use --help argument to view options
 
 `enrich --help`
 
-Enrich requires three positional arguments: `cohort`,`expr`, `out_dir`
+Priori requires two positional arguments: `expr` and `out_dir`
 
-`enrich cohort expr out_dir [regulon] [regulon_size] [sec_intx] [scaler_type] [thresh_filter] ` 
+`enrich expr out_dir [regulon] [regulon_size] [sec_intx] [scaler_type] [thresh_filter] ` 
 
 It is recommended to run enrich with the default parameters. 
 
-
-`enrich test tests/resources/test_expr.tsv test_enrichment_scores`
+`enrich tests/resources/test_expr.tsv test_enrichment_scores`
 
 The command above will generate enrichment scores for the unittest dataset `test_expr.tsv` and will generate and store the output under `test_enrichment_scores/`. In this directory `test_enrichment_scores/`, both the serialized Enrichment object `test_enrichment.pkl` and a tsv of the enrichment scores,`test_regulon_enrichment.tsv` will be found. 
 
