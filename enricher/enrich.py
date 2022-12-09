@@ -35,7 +35,6 @@ class Enrichment(object):
     """Base enrichment class for predicting regulon enrichment from -omic datasets.
 
     Args:
-        cohort :
         expr (:obj:`pd.DataFrame`, shape = [n_feats, n_samps])
         regulon (:obj: `pandas DataFrame`)
         regulon_size (int): Minimum number of edges for a given regulator.
@@ -43,7 +42,7 @@ class Enrichment(object):
 
     """
 
-    def __init__(self, cohort, expr, regulon=None, regulon_size=15, sec_intx=sec_intx_file,
+    def __init__(self, expr, regulon=None, regulon_size=15, sec_intx=sec_intx_file,
                  thresh_filter=0.1):
         if not isinstance(expr, pd.DataFrame):
             raise TypeError("`expr` must be a pandas DataFrame, found "
@@ -52,12 +51,11 @@ class Enrichment(object):
         if len(set(expr.index)) != expr.shape[0]:
             print(len(set(expr.index)))
             print(expr.shape)
-            raise OmicError("Duplicate feature names in {cohort} dataset!".format(cohort=cohort))
+            raise OmicError("Duplicate feature names in the dataset!")
 
         if len(set(expr.columns)) != expr.shape[1]:
-            raise OmicError("Duplicate sample names in {cohort} dataset!".format(cohort=cohort))
+            raise OmicError("Duplicate sample names in the dataset!")
 
-        self.cohort = cohort
         self.expr = expr
 
         if regulon is None:
@@ -77,10 +75,9 @@ class Enrichment(object):
         self.quant_nes = None
 
     def __str__(self):
-        return """------\nCohort: {}\nn-features: {}\nn-samples: {}\nscaler: {}\nscaled:\
+        return """------\nn-features: {}\nn-samples: {}\nscaler: {}\nscaled:\
         {}\nregulon threshold: {}\nregulon nodes: {}\nregulon edges: {}\n------\n""".\
-            format(self.cohort,
-                   self.expr.shape[0],
+            format(self.expr.shape[0],
                    self.expr.shape[1],
                    self.scaler_type,
                    self.scaled, self.regulon_size,
@@ -88,10 +85,9 @@ class Enrichment(object):
                    self.regulon.shape[0])
 
     def __repr__(self):
-        return """------\nCohort: {}\nn-features: {}\nn-samples: {}\nscaler: {}\nscaled: {}\
+        return """------\nn-features: {}\nn-samples: {}\nscaler: {}\nscaled: {}\
         \nregulon threshold: {}\nregulon nodes: {}\nregulon edges: {}\n------\n""".\
-            format(self.cohort,
-                   self.expr.shape[0],
+            format(self.expr.shape[0],
                    self.expr.shape[1],
                    self.scaler_type,
                    self.scaled,
@@ -292,7 +288,6 @@ def main():
         "and mechanisms available through Pathway Commons."
     )
 
-    parser.add_argument('cohort', type=str, help="which TCGA cohort to use")
     parser.add_argument('expr', type=str, help="which tab delimited expression matrix to use "
                                                "shape : [n_features, n_samples]"
                                                "units : TPM, RPKM")
@@ -318,7 +313,7 @@ def main():
     expr_matrix = pd.read_table(args.expr,index_col=0)
 
 
-    enr_obj = Enrichment(cohort=args.cohort, expr=expr_matrix, regulon=args.regulon,
+    enr_obj = Enrichment(expr=expr_matrix, regulon=args.regulon,
                          regulon_size=args.regulon_size, sec_intx=args.sec_intx,
                          thresh_filter=args.thresh_filter)
 
@@ -336,8 +331,8 @@ def main():
     print('\nEnrichment scores calculated!\n')
 
     regulon_utils.ensure_dir(args.out_dir)
-    regulon_utils.write_pickle(enr_obj, os.path.join(args.out_dir,'{}_enrichment.pkl'.format(args.cohort)))
-    enr_obj.total_enrichment.to_csv(os.path.join(args.out_dir,'{}_regulon_enrichment.tsv'.format(args.cohort)),sep='\t')
+    regulon_utils.write_pickle(enr_obj, os.path.join(args.out_dir,'priori_object.pkl'))
+    enr_obj.total_enrichment.to_csv(os.path.join(args.out_dir,'priori_activity_scores.tsv'),sep='\t')
     print('Complete')
 
 
