@@ -51,8 +51,10 @@ Once the environment has been built, activate it
 conda activate priori_env
 ```
 
-Open the **enricher** folder. Set this path to your PATH variable. After sourcing your bashrc script, you should be able to run Priori using ::
-    enrich
+Open the **enricher** folder. Set this path to your PATH variable. After sourcing your bashrc script, you should be able to run Priori using
+```
+enrich
+```
 
 # Priori parameters
 
