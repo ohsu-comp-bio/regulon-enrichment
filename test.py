@@ -10,15 +10,14 @@ Author: Joey Estabrook <estabroj@ohsu.edu>
 import os
 import sys
 base_dir = os.path.dirname(__file__)
-data_dir = os.path.join(base_dir, "tests/resources")
-#sys.path.extend([os.path.join(base_dir, '../..')])
+data_dir = os.path.join(base_dir, "priori/tests/resources")
 
 from sklearn.utils.validation import check_array
-from priori import Priori
-import regulon.regulon_enrichment as regulon_enrichment
-import features.expression_utils as expression_utils
-import regulon.regulon_utils as regulon_utils
-from features.expression_utils import log_norm
+from priori.priori import Priori
+import priori.regulon.regulon_enrichment as regulon_enrichment
+import priori.features.expression_utils as expression_utils
+import priori.regulon.regulon_utils as regulon_utils
+from priori.features.expression_utils import log_norm
 
 from tqdm import tqdm
 import warnings

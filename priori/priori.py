@@ -5,9 +5,9 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from sklearn.utils.validation import check_array
-import regulon.regulon_enrichment as regulon_enrichment
-import features.expression_utils as expression_utils
-import regulon.regulon_utils as regulon_utils
+import priori.regulon.regulon_enrichment as regulon_enrichment
+import priori.features.expression_utils as expression_utils
+import priori.regulon.regulon_utils as regulon_utils
 import argparse
 
 warnings.simplefilter("ignore", UserWarning)
