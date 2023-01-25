@@ -3,6 +3,7 @@ import os
 import functools
 import pandas as pd
 import numpy as np
+import statsmodels.api as sm
 from tqdm import tqdm
 from sklearn.utils.validation import check_array
 import priori.regulon.regulon_enrichment as regulon_enrichment
@@ -12,6 +13,7 @@ import argparse
 
 warnings.simplefilter("ignore", UserWarning)
 
+# Set global data path
 if __name__ == '__main__':
     DATA_PATH = os.path.join(os.getcwd(), 'data')
 else:
@@ -19,9 +21,8 @@ else:
 
     DATA_PATH = os.path.join(dirname, 'data')
 
-sif_file = DATA_PATH + '/PathwayCommons9.All.hgnc.sif.gz'
-sec_intx_file = DATA_PATH + '/secondary_intx_regulon.pkl'
-
+# Set path to local Pathway Commons relationships
+pathway_commons = DATA_PATH + '/primary_intx_regulon.pkl'
 
 class Error(Exception):
     """Base class for other exceptions"""
@@ -38,11 +39,10 @@ class Priori(object):
         expr (:obj:`pd.DataFrame`, shape = [n_feats, n_samps])
         regulon (:obj: `pandas DataFrame`)
         regulon_size (int): Minimum number of edges for a given regulator.
-        sec_intx_file (str): Path to pre-compiled secondary interaction network.
 
     """
 
-    def __init__(self, expr, regulon=None, regulon_size=15, sec_intx=sec_intx_file,
+    def __init__(self, expr, regulon=None, regulon_size=15,
                  thresh_filter=0.1):
         if not isinstance(expr, pd.DataFrame):
             raise TypeError("`expr` must be a pandas DataFrame, found "
@@ -56,23 +56,27 @@ class Priori(object):
         if len(set(expr.columns)) != expr.shape[1]:
             raise OmicError("Duplicate sample names in the dataset!")
 
+        # Assign object attributes defined by arguments
         self.expr = expr
+        self.regulon_size = regulon_size
+        self.thresh_filter = thresh_filter
 
         if regulon is None:
-            self.regulon = regulon_utils.read_pickle(sec_intx)
+            self.regulon = regulon_utils.read_pickle(pathway_commons)
 
         else:
             self.regulon = regulon
 
+        # Initialize attributes to be defined
         self.scaler_type = None
         self.scaled = False
-        self.regulon_size = regulon_size
         self.regulon_weights = None
-        self.thresh_filter = thresh_filter
-        self.total_enrichment = None
-        self.local_enrichment = None
+        self.enrichment = None
         self.regulators = None
-        self.quant_nes = None
+
+        self.correlations = None
+        self.p_values = None
+        self.adjusted_p_values = None
 
     def __str__(self):
         return """------\nn-features: {}\nn-samples: {}\nscaler: {}\nscaled:\
@@ -111,7 +115,6 @@ class Priori(object):
                 scaled expression data of shape [n_samples, n_features]
 
         """
-
         # By default, the input is checked to be a non-empty 2D array containing
         # only finite values.
         _ = check_array(expr)
@@ -130,9 +133,8 @@ class Priori(object):
 
         # Transpose frame to correctly orient frame for scaling and machine learning algorithms
         print('--- log2 normalization ---')
-
         expr_t = expr[(expr.std(axis=1) > thresh_filter)].T
-        expr_lt = expression_utils.log_norm(expr_t)
+        expr_lt = expression_utils.log_norm(expr_t+1e-12)
 
         print('--- Centering features with {} scaler ---'.format(scaler_type))
         scaled_frame = pd.DataFrame(scaler.fit_transform(expr_lt),
@@ -161,11 +163,13 @@ class Priori(object):
 
         """
 
+        # Identify transcription factors that are present in the expression data as well as the prior network
         expr_filtered_regulon = regulon[
             ((regulon.UpGene.isin(expr.columns)) & (regulon.DownGene.isin(expr.columns)))].\
             set_index('UpGene')
         idx = (expr_filtered_regulon.index.value_counts() >= regulon_size)
 
+        # Filter regulon and expression datasets
         filtered_regulon = expr_filtered_regulon.loc[idx[idx == True].index].reset_index()
         edges = list(set(filtered_regulon.UpGene) | set(filtered_regulon.DownGene))
         sub_expr = expr.loc[:,edges]
@@ -190,13 +194,20 @@ class Priori(object):
 
         """
 
+        # Identify the transcription factors and their targets
         sub_regul = pruned_regulon[(pruned_regulon['UpGene'] == regulator)]
         targs = sub_regul.DownGene
+
+        # Format the spearman correlation ranks and p-values as well as the F regression values
         p_ = p_frame.loc[targs, regulator]
         p_.name = 'likelihood'
         f_ = f_statistics[regulator][0]
         r_ = r_frame.loc[targs, regulator]
-        w_ = (f_ + abs(r_)) * np.sign(r_)
+
+        # Calculate transcription factor gene weights
+        w_ = (f_ * abs(r_)) * np.sign(r_)
+
+        # Reformat weights, assigning the likelihood as the spearman correlation p value
         w_.index.name = 'Target'
         w_.name = 'MoA'
         weights = w_.to_frame()
@@ -217,7 +228,6 @@ class Priori(object):
             thresh_filter (float): Prior to normalization remove features that do not have
                 the mean unit of a feature (i.e. 1 tpm) is greater than {thresh_filter}
 
-
         """
         self.scaler_type = scaler_type
         if scaler_type == None:
@@ -235,27 +245,40 @@ class Priori(object):
         if not self.scaled:
             warnings.warn('Assigning interaction weights without scaling dataset!')
 
+        # Filter regulon and expression by transcription factors present in each
         pruned_regulon, sub_expr = self._prune_regulon(self.expr, self.regulon, self.regulon_size)
         self.expr = sub_expr
-        # noinspection PyTypeChecker
+
+        # Calculate spearman correlation
         r, p = regulon_utils.spearmanr(self.expr)
 
+        # # FDR-adjust p-values using the Benjamini-Hochberg method
+        bool, p_adj, sidak, bonf = sm.stats.multipletests(p.flatten(), method = "fdr_bh")
+        p_adj = p_adj.reshape(p.shape)
+
+        # Create data frames
         r_frame = pd.DataFrame(r, columns=self.expr.columns, index=self.expr.columns)
         p_frame = pd.DataFrame(p, columns=self.expr.columns, index=self.expr.columns)
+        p_adj_frame = pd.DataFrame(p_adj, columns=self.expr.columns, index=self.expr.columns)
 
+        # Calculate F regression to correct for collinearity
         F_statistics = {regulator: regulon_utils.f_regression(
             self.expr.reindex(frame.DownGene, axis=1),
             self.expr.reindex([regulator], axis=1).values.ravel())
                         for regulator, frame in pruned_regulon.groupby('UpGene')}
 
+        # Assign spearman correlation coefficient, adjusted p-values, and F-statistics to weights
         weights = pd.concat([self._structure_weights(regulator,
                                                      pruned_regulon,
                                                      F_statistics,
                                                      r_frame,
-                                                     p_frame)
+                                                     p_adj_frame)
                              for regulator in F_statistics])
 
         self.regulon_weights = weights[~np.isinf(weights.MoA)]
+        self.correlations = r_frame
+        self.p_values = p_frame
+        self.adjusted_p_values = p_adj_frame
 
     def calculate_enrichment(self):
         """
@@ -267,19 +290,14 @@ class Priori(object):
             raise TypeError("`regulon_weights` must be assigned prior to enrichment calculation,"
                             " found {} instead!".format(type(self.regulon_weights)))
 
-        quant_nes = regulon_enrichment.quantile_nes_score(self.regulon_weights, self.expr.T)
-        self.quant_nes = quant_nes
         self.regulators = self.regulon_weights.index.unique()
 
         print('--- Calculating regulon enrichment scores ---')
-        nes_list, local_enrich_list = zip(*list(map(functools.partial(regulon_enrichment.score_enrichment,
-                                              expr=self.expr,
-                                              regulon=self.regulon_weights,
-                                              quant_nes=quant_nes),
-                            tqdm(self.regulators))))
+        enrich_list = list(map(functools.partial(regulon_enrichment.score_enrichment,
+                                              expr=self.expr, regulon=self.regulon_weights),
+                            tqdm(self.regulators)))
 
-        self.total_enrichment = pd.concat(nes_list, axis=1)
-        self.local_enrichment = pd.concat(local_enrich_list, axis=1)
+        self.enrichment = pd.concat(enrich_list, axis=1)
 
 
 def main():
@@ -292,30 +310,28 @@ def main():
                                                "shape : [n_features, n_samples]"
                                                "units : TPM, RPKM")
     parser.add_argument('out_dir', type=str, help="output directory")
-
     parser.add_argument('--regulon', type=str, help="optional regulon containing weight interactions between "
                                                   "regulator and downstream members of its regulon"
                                                   "shape : [len(Target), ['Regulator','Target','MoA','likelihood']",
                                                   default=None)
     parser.add_argument('--regulon_size', type=int, help="number of downstream interactions required for a given "
                                                        "regulator in order to calculate enrichment score", default=15)
-    parser.add_argument('--sec_intx', type=str, help="path to pre-compiled serialized secondary "
-                                                         "interaction network", default=sec_intx_file)
-
     parser.add_argument('--scaler_type', type=str, help="Scaler to normalized features/samples by: "
                                                       "standard | robust | minmax | quant", default='robust')
     parser.add_argument('--thresh_filter', type=float, help="Prior to normalization remove features that have a standard "
                                                         "deviation per feature less than {thresh_filter}",
                                                         default=0.1)
-    # parse command line arguments
+    # Parse command line arguments
     args = parser.parse_args()
 
+    # Read expression matrix
     expr_matrix = pd.read_table(args.expr,index_col=0)
 
-
+    # Create Priori object
     enr_obj = Priori(expr=expr_matrix, regulon=args.regulon,
-                         regulon_size=args.regulon_size, sec_intx=args.sec_intx,
+                         regulon_size=args.regulon_size, 
                          thresh_filter=args.thresh_filter)
+
 
     print(enr_obj)
     print('\nScaling data...\n')
@@ -332,7 +348,7 @@ def main():
 
     regulon_utils.ensure_dir(args.out_dir)
     regulon_utils.write_pickle(enr_obj, os.path.join(args.out_dir,'priori_object.pkl'))
-    enr_obj.total_enrichment.to_csv(os.path.join(args.out_dir,'priori_activity_scores.tsv'),sep='\t')
+    enr_obj.enrichment.to_csv(os.path.join(args.out_dir,'priori_activity_scores.tsv'),sep='\t')
     print('Complete')
 
 

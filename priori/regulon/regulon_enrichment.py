@@ -3,115 +3,6 @@ import pandas as pd
 import scipy.stats as st
 import numpy as np
 
-
-def assign_weights(lh):
-    """ Generate normalized likelihood weights and assigns those weights to the absolute gene expression signature
-
-    Args:
-        lh (pandas DataFrame): sparse DataFrame indicating likelihood for transcription factors
-
-    Returns:
-        nes_wt (pandas series): weight associated for each regulator based on their absolute gene expression signature
-        wts (pandas DataFrame): sparse DataFrame indicating likelihood for regulators
-    """
-    # Generate normalized likelihood weights
-    wts = lh.T.divide(lh.max(axis = 1)).T
-    wts = wts.fillna(0.0)
-
-    # Absolute gene expression signature
-    nes_wt = pd.DataFrame((wts ** 2).sum(axis=1)**.5)
-
-    wts = (wts.T / (wts.T.sum())).T
-
-    return nes_wt, wts
-
-
-def ensure_overlap(lh, mor, expr):
-    """ ensures label overlap with weights and expression matrix
-
-    Args:
-        lh (pandas DataFrame): sparse DataFrame indicating likelihood for regulators
-        mor (pandas DataFrame): sparse DataFrame indicating mode or regulation for transcription factors
-        expr (:obj: `pandas DataFrame`): pandas DataFrame of shape [n_feats, n_samps]
-
-    Returns:
-        expression, mor, lh (pandas DataFrame): expression, mode of regulation, and likelihood frames, respectfully,
-            re-indexed to be concordant with weights associated with regulon
-        """
-
-    expression = expr.reindex(mor.columns)
-    mor = mor.reindex(expression.index, axis=1)
-    lh = lh.reindex(expression.index, axis=1)
-
-    return expression, mor, lh
-
-
-def deconstruct_regulon(regulon):
-    """Returns a pandas DataFrame for likelihood and mode of regulation inferred by compile_total_regulon
-    Args:
-        regulon (pandas DataFrame): Aracne-AP Regulon file in four column format i.e. Regulator,Target,MoA,likelihood
-
-    Returns:
-        lh, mor (pandas DataFrame): sparse DataFrame indicating likelihood and mode or
-            regulation for transcription factors
-    """
-
-    lh = regulon.pivot(index = 'Regulator', columns = 'Target', values = 'likelihood').fillna(0.0)
-    mor = regulon.pivot(index = 'Regulator', columns = 'Target', values = 'MoA').fillna(0.0)
-
-    return lh, mor
-
-
-def quantile_nes_score(regulon, expr):
-    """ Generates quantile transformed rank position enrichment scores
-
-    Args:
-        regulon (:obj: `pandas DataFrame`): Aracne-AP Regulon file in four column format i.e.
-           Regulator,Target,MoA,likelihood
-        expr (:obj: `pandas DataFrame`): pandas DataFrame of shape [n_feats, n_samps]
-
-    Returns:
-        nes (:obj: `pandas DataFrame`): normalized enrichment scores per regulator
-    """
-
-    reset_regulon = regulon.reset_index()
-    lh, mor = deconstruct_regulon(reset_regulon)
-    expression, mor, lh = ensure_overlap(lh, mor, expr)
-
-    nes_wt, wts = assign_weights(lh)
-
-    pos = expression.index.get_indexer_for(lh.columns)
-    t2 = expression.rank() / (expression.shape[0] + 1)
-    t2 = pd.DataFrame(st.norm.ppf(t2.iloc[pos, ], loc=0, scale=1), columns=t2.columns, index=t2.index)
-    sum1 = (mor * wts).dot(t2)
-    nes = pd.DataFrame(sum1.values * nes_wt.values, columns=sum1.columns, index=sum1.index)
-
-    return nes
-
-
-def load_quantile(regulon, expr, cohort):
-    """ return pandas series of quantile enrichment scores for a given regulator
-
-    Args:
-        regulon (:obj: `pandas DataFrame`): Aracne-AP Regulon file in four column format i.e.
-           Regulator,Target,MoA,likelihood
-        expr (:obj: `pandas DataFrame`): pandas DataFrame of shape [n_feats, n_samps]
-        cohort (str) : name of cohort to associate with compiled regulon
-
-    Returns:
-        nes (obj: pandas series): series of quantile enrichment scores for a give regulator
-    """
-    quantile_nes = os.path.join(dirname, '../experiments/{0}/data/{0}_quantile_ranks.pkl'.format(cohort))
-    if os.path.isfile(quantile_nes):
-        print('--- Loading quantile normalization scores ---')
-        nes = read_pickle(quantile_nes)
-    else:
-        print('--- Generating quantile normalization scores ---')
-        nes = quantile_nes_score(regulon, expr.T)
-
-    return nes
-
-
 def subset_regulon(regulator, regulon, expr):
     """ Subset expression frame by regulator targets expressed in expression frame and by mode of regulation
 
@@ -127,10 +18,11 @@ def subset_regulon(regulator, regulon, expr):
         values
 
     """
+    # Subset regulon by transcription factor
     sub_regul = regulon.loc[regulator]
     sub_expr = expr.reindex(sub_regul.Target.values, axis = 1)
 
-    # Subset expression values by up and down regulated targets
+    # Identify up-regulated and down-regulated targets
     down_reg_sub = sub_expr.loc[:, (sub_regul.MoA < 0.0).values]
     up_reg_sub = sub_expr.loc[:, (sub_regul.MoA > 0.0).values]
 
@@ -152,32 +44,23 @@ def rank_and_order_total(expr_sub, regulator, regulon, ascending, expr):
         rank_ordered (:obj: `pandas DataFrame`) : pandas DataFrame of regulated targets regulator normed expression
 
     """
-
+    # Rank target genes (either up-regulated or down-regulated)
     total_ranked = expr.rank(method = 'max', ascending = ascending, axis = 1)
     moa_frame = regulon.loc[regulator, ].loc[regulon.loc[regulator, ].Target.isin(expr_sub.columns),
                                              ['Target', 'MoA', 'likelihood']].reset_index()
 
+    # Normalize weights by the likelihood (adjusted p-value)
     moa_frame.index = moa_frame.Target
     moa_frame.likelihood = moa_frame.likelihood / moa_frame.likelihood.max()
-
     moa_frame['weights'] = moa_frame.MoA * moa_frame.likelihood
-
     moa_frame = moa_frame.loc[:, 'MoA'].to_frame().T
-
     ranks = total_ranked.loc[:, expr_sub.columns]
 
-    # weighted_ranks = pd.np.multiply(ranks, moa_frame).sum(axis = 1).to_frame()
+    # Multiply weights and ranks
     weighted_ranks = np.multiply(ranks, moa_frame).sum(axis = 1).to_frame()
 
-    # Store minimum rank for samples - this value is equivalent to the total number of targets in expr_sub i.e. if all
-    # genes for a particular sample rank first the rank_min = 1.0 * #genes
-    # rank_min = 1.0 * expr_sub.shape[1]
-
+    # Store minimum and maximum ranks for samples
     rank_min = weighted_ranks.min().values[0]
-
-    # Store maximum rank for samples - this value is equivalent to the total number of targets in expr_sub i.e. if all
-    # genes for a particular sample rank last the rank_min = #samples * #genes
-
     rank_max = weighted_ranks.max().values[0]
 
     weighted_ranks['min'] = rank_min
@@ -201,6 +84,7 @@ def format_nes_frame(down_reg_ordered, up_reg_ordered, regulator):
 
     """
 
+    # Identify up-regulated and down-regulated targets
     down_normed = pd.DataFrame(down_reg_ordered.loc[:, 0].values, columns = ['down-regulated-targets'],
                                index = down_reg_ordered.index)
     down_normed = down_normed.fillna(0.0)
@@ -209,11 +93,14 @@ def format_nes_frame(down_reg_ordered, up_reg_ordered, regulator):
                              index = up_reg_ordered.index)
     up_normed = up_normed.fillna(0.0)
 
+    # Combine into single matrix
     join_r = pd.concat([down_normed, up_normed], axis = 1)
 
+    # Combine values, weighting the downregulated targets by -1
     join_r.columns = ['down-regulated-targets', 'up-regulated-targets']
     zframe = ((join_r['down-regulated-targets'] * -1) + join_r['up-regulated-targets']).to_frame()
 
+    # z-transform by each transcription factor
     zframe.columns = [regulator]
     zframe[regulator] = st.zscore(zframe[regulator])
     zframe = (zframe - zframe.median()) / zframe.std()
@@ -221,7 +108,8 @@ def format_nes_frame(down_reg_ordered, up_reg_ordered, regulator):
     return zframe
 
 
-def score_enrichment(regulator, expr, regulon, quant_nes):
+# def score_enrichment(regulator, expr, regulon, quant_nes):
+def score_enrichment(regulator, expr, regulon):
     """ Function to subset and generate regulator activity scores based
         on rank ordering of up-regulated and down-regulated targets
 
@@ -230,30 +118,24 @@ def score_enrichment(regulator, expr, regulon, quant_nes):
         expr (:obj: `pandas DataFrame`): pandas DataFrame of shape [n_samps, n_feats]
         regulon (:obj: `pandas DataFrame`): pandas DataFrame of regulon returned by compile_regulon
             with columns ['Target', 'MoA', 'likelihood']
-        quant_nes (obj: `pandas DataFrame`): quantile enrichment scores for regulators
     Return:
         enrichment_score (:obj: `pandas DataFrame`): pandas DataFrame of activity scores for specified regulator
 
     """
     print(regulator)
+
+    # Subset network and expression matrix by the regulon
     down_reg_sub, up_reg_sub = subset_regulon(regulator, regulon, expr)
 
     # Rank up and down regulated targets by z-scores. Sum rank values across rows
-    # (Compute numerical data ranks [1 through n] along axis)
-    # and sort samples lowest to highest summed rank score.
-
+    # (Compute numerical data ranks [1 through n] along axis) and sort samples lowest to highest summed rank score.
     down_reg_ordered = rank_and_order_total(down_reg_sub, regulator, regulon, ascending=False, expr=expr)
     up_reg_ordered = rank_and_order_total(up_reg_sub, regulator, regulon, ascending=True, expr=expr)
 
+    # Concatenate and sum up-regulated and down-regulated z-score rankings
     zframe = format_nes_frame(down_reg_ordered, up_reg_ordered, regulator)
 
-    local_enrich = zframe.copy()
-
-    zframe[regulator] = zframe.values
-
-    enrichment_score = zframe[regulator] + quant_nes.loc[regulator]
-
-    return enrichment_score, local_enrich
+    return zframe
 
 
 def logger(**kwargs):
@@ -276,50 +158,3 @@ def logger(**kwargs):
     for k, v in kwargs.items():
         out_f.write('* {} : {} \n'.format(k, v))
     out_f.close()
-
-
-def generate_enrichment_scores(expr_f, cohort, norm_type = 'robust', feature = True, sample = False,
-                               thresh_filter = 0.4, scale = True, regulon_size = 15):
-    """ Runs expression and regulon_utils functions to generate cohort specific regulon and enrichment scores
-
-    Args:
-        expr_f (str): absolute path to tab delimited expression file of shape = [n_features, n_samples]
-        cohort (str) : name of cohort to associate with compiled regulon and enrichment scores
-        norm_type (str): Scaler to normalized features/samples by: standard | robust | minmax | quant
-        feature (bool): Scale expression data by features
-        sample (bool): Scale expression data by both features and samples
-        thresh_filter (float): Prior to normalization remove features that do not have the mean unit of
-            a feature (i.e. 1 tpm) is greater than {thresh_filter}
-        scale (bool): optional arg to avoid scaling dataset if data set has been normalized prior to analysis
-        regulon_size (int) : required number of downstream interactions for a give regulator
-
-    Returns:
-        None
-
-    """
-    input_args = locals()
-    total_enrichment_nes = os.path.join(dirname, '../experiments/{0}/data/{0}_total_enrichment.pkl'.format(cohort))
-    if os.path.isfile(total_enrichment_nes):
-        print('--- Regulon enrichment scores pre-computed ---')
-        print(total_enrichment_nes)
-
-    else:
-        non_scaled_expr = load_expr(expr_f)
-
-        expr = load_scaled_expr(non_scaled_expr, cohort = cohort, norm_type = norm_type, feature = feature,
-                                sample = sample, thresh_filter = thresh_filter, scale = scale)
-
-        regulon = generate_bolstered_regulon(expr, cohort, regulon_size = regulon_size)
-        quant_nes = load_quantile(regulon, expr, cohort)
-        regulators = regulon.index.unique()
-
-        print('--- Calculating regulon enrichment scores ---')
-        nes_list = list(map(functools.partial(score_enrichment, expr=expr, regulon = regulon, quant_nes=quant_nes),
-                            tqdm(regulators)))
-        total_enrichment = pd.concat(nes_list, axis=1)
-
-        relnm = os.path.join(dirname, '../experiments/{0}/data'.format(cohort))
-
-        ensure_dir(relnm)
-        write_pickle(total_enrichment, os.path.join(relnm, '{}_total_enrichment.pkl'.format(cohort)))
-        logger(**input_args)
