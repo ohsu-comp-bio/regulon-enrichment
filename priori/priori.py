@@ -137,6 +137,14 @@ class Priori(object):
         # Transpose frame to correctly orient frame for scaling and machine learning algorithms
         print('--- log2 normalization ---')
         expr_t = expr[(expr.std(axis=1) > thresh_filter)].T
+
+        # Shift expression matrix so values are non-negative
+        min_expr = expr_t.min().min()
+
+        if min_expr <= 0:
+            expr_t = expr_t - min_expr + 1e-12
+
+        # Log2 transform
         expr_lt = expression_utils.log_norm(expr_t+1e-12)
 
         print('--- Centering features with {} scaler ---'.format(scaler_type))
