@@ -266,9 +266,7 @@ class Priori(object):
         # # FDR-adjust p-values using the Benjamini-Hochberg method
         bool, p_adj, sidak, bonf = sm.stats.multipletests(p.flatten(), method = "fdr_bh")
         p_adj = p_adj.reshape(p.shape)
-
-        p_rank = rankdata(p)
-
+        
         # Create data frames
         r_frame = pd.DataFrame(r, columns=self.expr.columns, index=self.expr.columns)
         p_frame = pd.DataFrame(p, columns=self.expr.columns, index=self.expr.columns)
