@@ -9,6 +9,9 @@ from sklearn.utils.validation import check_array
 import priori.regulon.regulon_enrichment as regulon_enrichment
 import priori.features.expression_utils as expression_utils
 import priori.regulon.regulon_utils as regulon_utils
+# import regulon.regulon_enrichment as regulon_enrichment
+# import features.expression_utils as expression_utils
+# import regulon.regulon_utils as regulon_utils
 import argparse
 
 warnings.simplefilter("ignore", UserWarning)
@@ -255,6 +258,8 @@ class Priori(object):
         # # FDR-adjust p-values using the Benjamini-Hochberg method
         bool, p_adj, sidak, bonf = sm.stats.multipletests(p.flatten(), method = "fdr_bh")
         p_adj = p_adj.reshape(p.shape)
+
+        p_rank = rankdata(p)
 
         # Create data frames
         r_frame = pd.DataFrame(r, columns=self.expr.columns, index=self.expr.columns)
