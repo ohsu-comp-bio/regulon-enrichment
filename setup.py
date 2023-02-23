@@ -1,17 +1,14 @@
 import setuptools
 
 setuptools.setup(name='priori',
-      version='1.0.5',
+      version='1.0.3',
       description="""Priori predicts transcription factor activity from RNA sequencing data using prior, literature-supported regulatory relationship information.""",
       author='Joseph Estabrook, William Yashar, & Emek Demir',
       author_email='yashar@ohsu.edu',
-      entry_points={'console_scripts':['enrich=priori.enrich:main']},
-      packages=setuptools.find_packages(
-          exclude=["priori.tests.*", "priori.tests"]),
-      data_files=[('priori',
-                   ['data/PathwayCommons9.All.hgnc.sif.gz', 'data/primary_intx_regulon.pkl']
-                   )],
-      package_data={'enricher':['data/PathwayCommons9.All.hgnc.sif.gz', 'data/primary_intx_regulon.pkl']},
+      entry_points={'console_scripts':['priori=priori.priori:main']},
+      packages=setuptools.find_packages(where="priori"),
+      package_dir={"": "priori"},
+      include_package_data=True,
       url = 'https://github.com/ohsu-comp-bio/regulon-enrichment',
       classifiers = [
          "Programming Language :: Python :: 3",
