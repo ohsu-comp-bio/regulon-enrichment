@@ -3,6 +3,7 @@ import os
 import functools
 import pandas as pd
 import numpy as np
+import statsmodels.api as sm
 from tqdm import tqdm
 from sklearn.utils.validation import check_array
 import priori.regulon.regulon_enrichment as regulon_enrichment
@@ -75,6 +76,7 @@ class Priori(object):
 
         self.correlations = None
         self.p_values = None
+        self.adjusted_p_values = None
 
     def __str__(self):
         return """------\nn-features: {}\nn-samples: {}\nscaler: {}\nscaled:\
@@ -257,10 +259,15 @@ class Priori(object):
 
         # Calculate spearman correlation
         r, p = regulon_utils.spearmanr(self.expr)
+
+        # FDR-adjust p-values using the Benjamini-Hochberg method
+        bool, p_adj, sidak, bonf = sm.stats.multipletests(p.flatten(), method = "fdr_bh")
+        p_adj = p_adj.reshape(p.shape)
         
         # Create data frames
         r_frame = pd.DataFrame(r, columns=self.expr.columns, index=self.expr.columns)
         p_frame = pd.DataFrame(p, columns=self.expr.columns, index=self.expr.columns)
+        p_adj_frame = pd.DataFrame(p_adj, columns=self.expr.columns, index=self.expr.columns)
 
         # Calculate F regression to correct for collinearity
         F_statistics = {regulator: regulon_utils.f_regression(
@@ -273,12 +280,13 @@ class Priori(object):
                                                      pruned_regulon,
                                                      F_statistics,
                                                      r_frame,
-                                                     p_frame)
+                                                     p_adj_frame)
                              for regulator in F_statistics])
 
         self.regulon_weights = weights[~np.isinf(weights.MoA)]
         self.correlations = r_frame
         self.p_values = p_frame
+        self.adjusted_p_values = p_adj_frame
 
     def calculate_enrichment(self):
         """
