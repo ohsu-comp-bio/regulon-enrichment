@@ -14,18 +14,6 @@ Alternatively, Priori can be downloaded directly from GitHub.
 git clone https://github.com/ohsu-comp-bio/regulon-enrichment.git
 ```
 
-In order to install Priori to the command line, open the **regulon-enrichment** folder. Create a conda environment with the necessary dependencies.
-```
-cd regulon-enrichment
-conda env create -f priori_env.yml
-conda activate priori_env
-```
-
-Once the environment has been built, add the **priori** folder path to your PATH variable. After sourcing your bashrc script, you should be able to run Priori using
-```
-priori
-```
-
 # Usage
 ```
 
