@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(name='priori',
-      version='1.0.3',
+      version='1.0.4',
       description="""Priori predicts transcription factor activity from RNA sequencing data using prior, literature-supported regulatory relationship information.""",
       author='Joseph Estabrook, William Yashar, & Emek Demir',
       author_email='yashar@ohsu.edu',
