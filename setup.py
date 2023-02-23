@@ -5,9 +5,10 @@ setuptools.setup(name='priori',
       description="""Priori predicts transcription factor activity from RNA sequencing data using prior, literature-supported regulatory relationship information.""",
       author='Joseph Estabrook, William Yashar, & Emek Demir',
       author_email='yashar@ohsu.edu',
-      entry_points={'console_scripts':['priori=priori.priori:main']},
-      packages=setuptools.find_packages(where="priori"),
-      package_dir={"": "priori"},
+      entry_points={'console_scripts':['priori = priori.priori:main']},
+      packages=setuptools.find_packages(
+        where=".",
+        include=['priori*']),
       include_package_data=True,
       url = 'https://github.com/ohsu-comp-bio/regulon-enrichment',
       classifiers = [
