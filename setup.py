@@ -6,7 +6,10 @@ setuptools.setup(name='priori',
       author='Joseph Estabrook, William Yashar, & Emek Demir',
       author_email='yashar@ohsu.edu',
       entry_points={'console_scripts':['priori=priori.priori:main']},
-      data_files=[('priori')],
+      data_files=[('priori',
+                   ['data/PathwayCommons9.All.hgnc.sif.gz', 'data/primary_intx_regulon.pkl']
+                   )],
+      package_data={'priori':['data/PathwayCommons9.All.hgnc.sif.gz', 'data/primary_intx_regulon.pkl']},
       url = 'https://github.com/ohsu-comp-bio/regulon-enrichment',
       classifiers = [
          "Programming Language :: Python :: 3",
