@@ -23,6 +23,7 @@ priori expr out_dir [--help] [--regulon "<value>"] [--regulon_size "<value>"]
 Required arguments:
     expr                A tab-delimited normalized expression matrix of the shape 
                         [n_features, n_samples]
+                        
     out_dir             Output directory where the serialized Priori object and 
                         priori activity scores will be saved
 
@@ -32,10 +33,13 @@ Optional arguments:
                         (Regulator), target genes (Target), edge weights (MoA), and
                         likelihood of interaction (likelihood). The network should be 
                         formatted as ['Regulator','Target','MoA','likelihood']
+                        
     --regulon_size      Number of downstream target genes required for a given 
                         transcriptional regulator. Default = 15
+                        
     --scaler_type       Method to scale normalized expression. Options include standard, 
                         robust, minmax, or quant. Default = robust.
+                        
     --thresh_filter     Remove features with a standard deviation below this value. Default = 0.1.
 ```
 
