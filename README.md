@@ -2,66 +2,49 @@
 
 Priori predicts transcription factor activity from RNA sequencing data using prior, literature-supported regulatory relationship information.
 
-# Running Priori
+# Configure
 
-## Invoking Priori from the command line
-
-Download the latest release using conda:
+The latest release of Priori can be downloaded using conda:
 ```
 conda install -c wmyashar priori
 ```
 
-Priori can also be downloaded directly from GitHub. 
+Alternatively, Priori can be downloaded directly from GitHub. 
 ```
 git clone https://github.com/ohsu-comp-bio/regulon-enrichment.git
 ```
 
-Open the **regulon-enrichment** folder. Create a conda environment with the dependencies needed to run Priori
+In order to install Priori to the command line, open the **regulon-enrichment** folder. Create a conda environment with the necessary dependencies.
 ```
 cd regulon-enrichment
 conda env create -f priori_env.yml
 conda activate priori_env
 ```
 
-Once the environment has been built, add the path to the **priori** folder to your PATH variable. After sourcing your bashrc script, you should be able to run Priori using
+Once the environment has been built, add the **priori** folder path to your PATH variable. After sourcing your bashrc script, you should be able to run Priori using
 ```
 priori
 ```
 
-# Priori parameters
+# Usage
+```
 
-## Required parameters
+priori expr out_dir [--help] [--regulon "<value>"] [--regulon_size "<value>"] [--scaler_type "<value>"] [--thresh_filter "<value>"] 
 
-`expr` : which tab delimited expression matrix to use shape : `[n_features, n_samples]`, units : `TPM, RPKM`
+Required arguments:
+    expr    A tab-delimited normalized expression matrix of the shape [n_features, n_samples]
+    out_dir Output directory where the serialized Priori object and priori activity scores will be saved
 
-`out_dir` : output directory - directory serialized Priori object and priori_activity_scores.tsv will be saved to
+Optional arguments:
 
+    --regulon    A prior network that contains the transcriptional regulators (Regulator), target genes (Target), edge weights (MoA), and likelihood of interaction (likelihood). The network should be formatted as ['Regulator','Target','MoA','likelihood']
+    --regulon_size Number of downstream target genes required for a given transcriptional regulator. Default = 15
+    --scaler_type   Method to scale normalized expression. Options include standard, robust, minmax, or quant. Default = robust.
+    --thresh_filter Remove features with a standard deviation below this value. Default = 0.1.
+```
 
-## Optional parameters
+# Paper
 
-`regulon` : optional regulon containing weight interactions between regulator and 
-            downstream members of its regulon shape : `[len(Target), ['Regulator','Target','MoA','likelihood']`
+Priori has been released as a pre-print. If you use our program in your studies, please cite our paper:
 
-`regulon_size` : number of downstream interactions required for a given regulator in order to calculate enrichment score `default=15`
-
-`sec_intx` : path to pre-compiled serialized secondary interaction network, `default=secondary_intx_regulon.pkl`
-
-`scaler_type` : scaler to normalized features/samples by: `standard | robust | minmax | quant`, default=`robust`
-
-`thresh_filter` : Prior to normalization remove features that have a standard deviation per feature less than `{thresh_filter}`, `default=0.1`)
-
-
-# Computing transcription factor activity scores
-
-To quantify the transcription factor activity for a given dataset, the command line script `priori` is used.
-
-Use --help argument to view options
-
-`priori --help`
-
-Priori requires two positional arguments: `expr` and `out_dir`
-
-`priori expr out_dir [regulon] [regulon_size] [sec_intx] [scaler_type] [thresh_filter] ` 
-It is recommended to run Priori with the default parameters. 
-
-The `priori_activity_scores.tsv` file be shaped : `[n_samples, n_regulators]`, where `n_samples` refers to the original number of samples provided in `expr`, while `n_regulators` will be determined based on the overlapping features present in the `expr` dataset and the `regulon_size` parameter. 
+Estabrook, J, Yashar, WM, et al. Predicting transcription factor activity using prior biological information. bioRxiv (2023). https://doi.org/10.1101/2022.12.16.520295 
