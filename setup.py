@@ -8,8 +8,10 @@ setuptools.setup(name='priori',
       entry_points={'console_scripts':['priori = priori.priori:main']},
       packages=setuptools.find_packages(
         where=".",
-        include=['priori*']),
+        include=['priori*'],
+        exclude=["priori.tests.*", "priori.tests"]),
       include_package_data=True,
+      package_data={"priori":["data/PathwayCommons9.All.hgnc.sif.gz"], "priori":["data/primary_intx_regulon.pkl"]},
       url = 'https://github.com/ohsu-comp-bio/regulon-enrichment',
       classifiers = [
          "Programming Language :: Python :: 3",
