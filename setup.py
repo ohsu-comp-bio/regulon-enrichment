@@ -18,7 +18,6 @@ setuptools.setup(name='priori',
          "License :: OSI Approved :: GLP-3.0",
          "Operating System :: OS Independent",
       ],
-      python_requires = '>=3.6.15',
       install_requires=[
           'numpy>=1.19.5',
           'pandas>=1.1.5',
