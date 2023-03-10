@@ -6,7 +6,7 @@ Priori predicts transcription factor activity from RNA sequencing data using pri
 
 The latest release of Priori can be downloaded using conda:
 ```
-conda install -c wmyashar priori
+conda install -c conda-forge priori
 ```
 
 Alternatively, Priori can be downloaded directly from GitHub. 
