@@ -1,4 +1,4 @@
-import warnings
+import warnings 
 import os
 import functools
 import pandas as pd
@@ -179,6 +179,7 @@ class Priori(object):
 
         # Filter regulon and expression datasets
         filtered_regulon = expr_filtered_regulon.loc[idx[idx == True].index].reset_index()
+        filtered_regulon=filtered_regulon.rename(columns={"index":"UpGene"})
         edges = list(set(filtered_regulon.UpGene) | set(filtered_regulon.DownGene))
         sub_expr = expr.loc[:,edges]
 

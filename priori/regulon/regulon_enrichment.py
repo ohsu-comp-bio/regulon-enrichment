@@ -56,8 +56,11 @@ def rank_and_order_total(expr_sub, regulator, regulon, ascending, expr):
     moa_frame = moa_frame.loc[:, 'MoA'].to_frame().T
     ranks = total_ranked.loc[:, expr_sub.columns]
 
+    # Align
+    aligned = ranks.align(moa_frame, axis = 1)
+
     # Multiply weights and ranks
-    weighted_ranks = np.multiply(ranks, moa_frame).sum(axis = 1).to_frame()
+    weighted_ranks = np.multiply(aligned[0], np.asarray(aligned[1])).sum(axis = 1).to_frame()
 
     # Store minimum and maximum ranks for samples
     rank_min = weighted_ranks.min().values[0]
@@ -107,8 +110,6 @@ def format_nes_frame(down_reg_ordered, up_reg_ordered, regulator):
 
     return zframe
 
-
-# def score_enrichment(regulator, expr, regulon, quant_nes):
 def score_enrichment(regulator, expr, regulon):
     """ Function to subset and generate regulator activity scores based
         on rank ordering of up-regulated and down-regulated targets
