@@ -21,11 +21,6 @@ When this operation is finished, activate the environment with the following com
 conda activate priori_tutorial_env
 ```
 
-In order to call Priori from our Jupyter notebook, we will need to create a separate Jupyter kernel. This can be done with the following command:
-```
-python -m ipykernel install --user --name=priori_tutorial_jupyter_kernel
-```
-
 You can now initialize jupyter notebooks from the command line and proceed with the tutorial in the document titled `priori_tcga_brca_tutorial.ipynb`:
 ```
 jupyter notebook
