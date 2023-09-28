@@ -65,7 +65,7 @@ class Priori(object):
             self.regulon = regulon_utils.read_pickle(pathway_commons)
 
         else:
-            self.regulon = regulon
+            self.regulon = regulon_utils.format_custom_network(regulon)
 
         # Initialize attributes to be defined
         self.scaler_type = None

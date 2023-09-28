@@ -44,6 +44,37 @@ def read_pickle(relnm):
     print('Loaded object from disk at {}'.format(relnm))
     return obj
 
+def format_custom_network(relnm):
+    """ Read custom network at relnm
+
+    Args:
+        relnm (str) : Relative name/path to tsv object
+
+    Returns:
+        obj (`:obj: unpickled object`)
+
+    """
+
+    try:
+
+        df = pd.read_csv(relnm, sep='\t')
+
+        # Check if "Regulator" and "Target" columns exist
+        if 'Regulator' not in df.columns or 'Target' not in df.columns:
+            raise ValueError("Columns 'Regulator' and 'Target' were not found in the input network. Please re-format your network and try again.")
+
+    except FileNotFoundError:
+        raise FileNotFoundError(f"File not found: {input_file}")
+
+    obj = pd.DataFrame({
+        'UpGene': df['Regulator'],
+        'Type': 'controls-expression-of',
+        'DownGene': df['Target']
+    })
+
+    print('Loaded object from disk at {}'.format(relnm))
+    return obj
+
 
 def ensure_dir(relnm):
     """ Accept relative filepath string, create it if it doesnt already exist
