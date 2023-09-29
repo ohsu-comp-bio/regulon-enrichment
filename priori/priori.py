@@ -6,9 +6,12 @@ import numpy as np
 import statsmodels.api as sm
 from tqdm import tqdm
 from sklearn.utils.validation import check_array
-import priori.regulon.regulon_enrichment as regulon_enrichment
-import priori.features.expression_utils as expression_utils
-import priori.regulon.regulon_utils as regulon_utils
+import regulon.regulon_enrichment as regulon_enrichment
+import features.expression_utils as expression_utils
+import regulon.regulon_utils as regulon_utils
+# import priori.regulon.regulon_enrichment as regulon_enrichment
+# import priori.features.expression_utils as expression_utils
+# import priori.regulon.regulon_utils as regulon_utils
 import argparse
 
 warnings.simplefilter("ignore", UserWarning)
@@ -341,7 +344,6 @@ def main():
                          regulon_size=args.regulon_size, 
                          thresh_filter=args.thresh_filter)
 
-
     print(enr_obj)
     print('\nScaling data...\n')
     enr_obj.scale(scaler_type=args.scaler_type, thresh_filter=args.thresh_filter)
@@ -358,6 +360,7 @@ def main():
     regulon_utils.ensure_dir(args.out_dir)
     regulon_utils.write_pickle(enr_obj, os.path.join(args.out_dir,'priori_object.pkl'))
     enr_obj.enrichment.to_csv(os.path.join(args.out_dir,'priori_activity_scores.tsv'),sep='\t')
+    enr_obj.regulon_weights.to_csv(os.path.join(args.out_dir,'priori_activity_score_weights.tsv'),sep='\t')
     print('Complete')
 
 
