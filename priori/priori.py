@@ -6,9 +6,9 @@ import numpy as np
 import statsmodels.api as sm
 from tqdm import tqdm
 from sklearn.utils.validation import check_array
-import regulon.regulon_enrichment as regulon_enrichment
-import features.expression_utils as expression_utils
-import regulon.regulon_utils as regulon_utils
+import priori.regulon.regulon_enrichment as regulon_enrichment
+import priori.features.expression_utils as expression_utils
+import priori.regulon.regulon_utils as regulon_utils
 import argparse
 
 warnings.simplefilter("ignore", UserWarning)
@@ -359,3 +359,6 @@ def main():
     enr_obj.enrichment.to_csv(os.path.join(args.out_dir,'priori_activity_scores.tsv'),sep='\t')
     enr_obj.regulon_weights.to_csv(os.path.join(args.out_dir,'priori_activity_score_weights.tsv'),sep='\t')
     print('Complete')
+
+if __name__ == "__main__":
+    main()
