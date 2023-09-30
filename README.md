@@ -18,7 +18,7 @@ Using pip:
 pip install priori_regulon-enrichment
 ```
 
-Alternatively, Priori can be downloaded directly from GitHub: 
+Or directly from GitHub: 
 ```
 git clone https://github.com/ohsu-comp-bio/regulon-enrichment.git
 ```
