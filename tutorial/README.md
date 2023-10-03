@@ -6,9 +6,11 @@ This notebook requires the use of the conda package manager. If you do not have 
 
 # Set-up
 
-Once conda has been set-up, we need to install the appropriate packages in order to run our analysis. First, download the files in this tutorial folder to your personal device:
+Once conda has been set-up, we need to install the appropriate packages in order to run our analysis. First, download the files in this tutorial folder to your personal device, unzip it, and then nativigate into the folder:
 ```
-wget https://github.com/ohsu-comp-bio/regulon-enrichment/tree/master/tutorial
+wget --no-check-certificate https://github.com/ohsu-comp-bio/regulon-enrichment/raw/master/tutorial/tutorial.zip -O tutorial.zip
+unzip tutorial.zip
+cd tutorial
 ```
 
 Navigate to the tutorial file in the command line and then run the command below:
