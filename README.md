@@ -33,7 +33,7 @@ Once Priori is downloaded, the input data needs to be formatted for analysis. Ac
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 | Gene_1  | #  | # | ... | # |
 | Gene_2  | #  | # | ... | # |
-| ...  | #  | # | ... | ... |
+| ...  | ...  | ... | ... | ... |
 | Gene_n  | #  | # | ... | # |
 
 # Usage
