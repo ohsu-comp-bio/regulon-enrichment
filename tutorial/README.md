@@ -17,14 +17,14 @@ Navigate to the tutorial file in the command line and then run the command below
 ```
 conda env create -f priori_tutorial_env.yml
 ```
-Note: This command may take a while to complete (30 minutes - 2 hours). You can speed up this step using [mamba](https://mamba.readthedocs.io/en/latest/).
+_Note: This command may take a while to complete (30 minutes - 2 hours). You can speed up this step using [mamba](https://mamba.readthedocs.io/en/latest/)._
 
 When this operation is finished, activate the environment with the following command:
 ```
 conda activate priori_tutorial_env
 ```
 
-You can now initialize jupyter notebooks and continue with the tutorial in the document titled `priori_tcga_brca_tutorial.ipynb`:
+You can now initialize Jupyter notebooks and continue with the tutorial in the document titled `priori_tcga_brca_tutorial.ipynb`:
 ```
 jupyter notebook
 ```

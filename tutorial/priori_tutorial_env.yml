@@ -7,6 +7,8 @@ dependencies:
   - dill>=0.3.7
   - ipykernel>=6.25.2
   - jupyter>=1.0.0
+  - jupyterlab>=3.3.2
+  - nbconvert-core>=7.8.0
   - numpy>=1.26.0
   - pandas>=2.1.1
   - priori>=1.0.6
