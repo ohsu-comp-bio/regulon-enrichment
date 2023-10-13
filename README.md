@@ -26,7 +26,7 @@ git clone https://github.com/ohsu-comp-bio/regulon-enrichment.git
 # Set-up
 
 Once Priori is downloaded, the input data needs to be formatted for analysis. Activity scores should only be generated from normalized gene expression data. Any standard normalization method, including CPM or TPM, stored in a tab-delimited file is sufficient. The input data must be in the following format:
-  1. Gene symbols stored in a column labeled "features".
+  1. Gene symbols stored in a column labeled "features". 
   2. Separate columns of normalized gene expression values for each sample. Label each column with the sample name.
 
 | features  | Sample_1 | Sample_2 | ... | Sample_n |
@@ -52,9 +52,9 @@ Required arguments:
 Optional arguments:
 
     --regulon           A prior network that contains the transcriptional regulators 
-                        (Regulator), target genes (Target), edge weights (MoA), and
+                        (regulator), target genes (target), edge weights (moa), and
                         likelihood of interaction (likelihood). The network should be 
-                        formatted as ['Regulator','Target','MoA','likelihood']
+                        formatted as ['regulator','trget','moa','likelihood']
                         
     --regulon_size      Number of downstream target genes required for a given 
                         transcriptional regulator. Default = 15
