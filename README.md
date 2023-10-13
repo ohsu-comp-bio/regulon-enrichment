@@ -54,7 +54,7 @@ Optional arguments:
     --regulon           A prior network that contains the transcriptional regulators 
                         (regulator), target genes (target), edge weights (moa), and
                         likelihood of interaction (likelihood). The network should be 
-                        formatted as ['regulator','trget','moa','likelihood']
+                        formatted as ['regulator','target','moa','likelihood']
                         
     --regulon_size      Number of downstream target genes required for a given 
                         transcriptional regulator. Default = 15
