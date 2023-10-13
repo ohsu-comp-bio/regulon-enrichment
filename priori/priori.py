@@ -10,7 +10,7 @@ import priori.regulon.regulon_enrichment as regulon_enrichment
 import priori.features.expression_utils as expression_utils
 import priori.regulon.regulon_utils as regulon_utils
 import argparse
-
+import re
 warnings.simplefilter("ignore", UserWarning)
 
 # Set global data path
@@ -65,7 +65,7 @@ class Priori(object):
             self.regulon = regulon_utils.read_pickle(pathway_commons)
 
         else:
-            self.regulon = regulon_utils.format_custom_network(regulon)
+            self.regulon = regulon_utils.read_custom_network(regulon)
 
         # Initialize attributes to be defined
         self.scaler_type = None
@@ -308,7 +308,6 @@ class Priori(object):
 
         self.enrichment = pd.concat(enrich_list, axis=1)
 
-
 def main():
     parser = argparse.ArgumentParser(
         "Infer transcription factor activity from gene expression data utilizing pathway and molecular interactions "
@@ -333,13 +332,16 @@ def main():
     # Parse command line arguments
     args = parser.parse_args()
 
-    # Read expression matrix
-    expr_matrix = pd.read_table(args.expr,index_col=0)
+    # Read and check expression matrix
+    expr_matrix = pd.read_table(args.expr)
+    expr_matrix = expression_utils.check_expr(expr_matrix)
+    print('Loaded input expression data from {}'.format(args.expr))
 
     # Create Priori object
-    enr_obj = Priori(expr=expr_matrix, regulon=args.regulon,
-                         regulon_size=args.regulon_size, 
-                         thresh_filter=args.thresh_filter)
+    enr_obj = Priori(expr=expr_matrix, 
+        regulon=args.regulon,
+        regulon_size=args.regulon_size, 
+        thresh_filter=args.thresh_filter)
 
     print(enr_obj)
     print('\nScaling data...\n')

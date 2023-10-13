@@ -2,6 +2,7 @@ import numpy as np
 import os
 from sklearn.preprocessing import RobustScaler, MinMaxScaler, StandardScaler, QuantileTransformer
 import pandas as pd
+import re
 
 
 def load_expr(expr_f):
@@ -18,6 +19,65 @@ def load_expr(expr_f):
     expr = pd.read_csv(expr_f, sep='\t', index_col=0)
 
     return expr
+
+def format_expr(df):
+    """
+    Re-format the input expression matrix so the gene names are stored in the index.
+
+    """
+    if 'features' in df.columns:
+        df = df.set_index('features') # If "features" column already exists, set index as features
+        return df
+
+    # If the features column doesn't exist, assign features from the rownames
+    else:
+        print("The 'features' column wasn't found. Assigning features from the rownames.")
+        df = df.rename_axis('features')
+        return df
+
+def check_for_duplicates(df):
+    """
+    Check for duplicate rows or columns in the input expression matrix.
+
+    """
+    # Check for duplicate rows
+    if df.index.duplicated().any():
+        dup_features = df.index[df.index.duplicated()]
+        raise ValueError(f"Duplicate genes ({', '.join(map(str, dup_features))}) were found in your input expression matrix. Please re-format your input expression matrix.")
+
+def check_for_ensembl_id_format(df):
+    """
+    Check if at least one gene name in the list follows the Ensembl ID format.
+
+    """
+    ensembl_id_pattern = re.compile(r'^ENSG')
+
+    for name in df.index:
+        if ensembl_id_pattern.match(name):
+            raise ValueError(f"Error: '{name}' is in Ensembl ID format. Please provide features as gene symbols.")
+
+def check_expr(df):
+    """
+    Re-format the input expression matrix so the gene names are stored in a column called "features".
+
+    Args:
+        - df (data frame): the input expression matrix
+
+    Returns:
+        - df or None: Returns an error message if the input matrix does not have gene names stored 
+            in a column called "features" or in the rownames.
+    """
+
+    # Format the expression matrix
+    df = format_expr(df)
+
+    # Check for duplicate features or sample names
+    check_for_duplicates(df)
+
+    # Verify that genes are listed as gene symbols, not as ensemble IDs
+    check_for_ensembl_id_format(df)
+
+    return df
 
 
 def log_norm(expr):

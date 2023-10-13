@@ -41,10 +41,10 @@ def read_pickle(relnm):
 
     with open(relnm, 'rb') as f:
         obj = pickle.load(f)
-    print('Loaded object from disk at {}'.format(relnm))
+    print('Loaded network from {}'.format(relnm))
     return obj
 
-def format_custom_network(relnm):
+def read_custom_network(relnm):
     """ Read custom network at relnm
 
     Args:
@@ -59,20 +59,30 @@ def format_custom_network(relnm):
 
         df = pd.read_csv(relnm, sep='\t')
 
-        # Check if "Regulator" and "Target" columns exist
-        if 'Regulator' not in df.columns or 'Target' not in df.columns:
-            raise ValueError("Columns 'Regulator' and 'Target' were not found in the input network. Please re-format your network and try again.")
+        # Check if "regulator" columns exist
+        if 'regulator' not in df.columns:
+            raise ValueError("The 'regulator' column was not in the input network. Please re-format your network and try again.")
+
+        # Check if "target" columns exist
+        if 'target' not in df.columns:
+            raise ValueError("The 'target' column was not in the input network. Please re-format your network and try again.")
+
+        # Check for duplicate rows
+        if df.duplicated().any():
+            dup_rows = df[df.duplicated()]
+            # raise ValueError("Duplicate rows were found in your input network. Please re-format your input network.")
+            raise ValueError(f"Duplicate rows were found in your input network:\n{dup_rows}. \nPlease re-format your input network.")
 
     except FileNotFoundError:
-        raise FileNotFoundError(f"File not found: {input_file}")
+        raise FileNotFoundError(f"File not found: {relnm}")
 
     obj = pd.DataFrame({
-        'UpGene': df['Regulator'],
+        'UpGene': df['regulator'],
         'Type': 'controls-expression-of',
-        'DownGene': df['Target']
+        'DownGene': df['target']
     })
 
-    print('Loaded object from disk at {}'.format(relnm))
+    print('Loaded network from {}'.format(relnm))
     return obj
 
 
