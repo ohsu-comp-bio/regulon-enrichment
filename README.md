@@ -29,12 +29,12 @@ Once Priori is downloaded, the input data needs to be formatted for analysis. Ac
   1. Gene symbols stored in a column labeled "features". 
   2. Separate columns of normalized gene expression values for each sample. Label each column with the sample name.
 
-| features  | Sample_1 | Sample_2 | ... | Sample_n |
+| features  | sample_1 | sample_2 | ... | sample_n |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
-| Gene_1  | #  | # | ... | # |
-| Gene_2  | #  | # | ... | # |
+| gene_1  | #  | # | ... | # |
+| gene_2  | #  | # | ... | # |
 | ...  | ...  | ... | ... | ... |
-| Gene_n  | #  | # | ... | # |
+| gene_n  | #  | # | ... | # |
 
 # Usage
 ```
