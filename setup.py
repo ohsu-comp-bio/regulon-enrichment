@@ -1,9 +1,9 @@
 import setuptools
 
 setuptools.setup(name='priori_regulon-enrichment',
-      version='1.0.7',
+      version='1.0.8',
       description="""Priori predicts transcription factor activity from RNA sequencing data using prior, literature-supported regulatory relationship information.""",
-      author='Joseph Estabrook, William Yashar, & Emek Demir',
+      author='Joseph Estabrook, William Yashar, Andrew Ashford, & Emek Demir',
       author_email='yashar@ohsu.edu',
       entry_points={
         'console_scripts': ['priori = priori.priori:main']
