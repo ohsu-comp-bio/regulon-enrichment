@@ -68,12 +68,12 @@ Optional arguments:
 # Output
 
 Priori generates three files: 
-  1. `priori_activity_scores.tsv`: This file contains the normalized, transcription factor activity scores in the structure of [n_samples, n_features]. This is the primary output to analyze. Please see our [pre-print](https://www.biorxiv.org/content/10.1101/2022.12.16.520295v2) or the [tutorial](https://github.com/ohsu-comp-bio/regulon-enrichment/tree/master/tutorial) for ways to analyze these scores.
+  1. `priori_activity_scores.tsv`: This file contains the normalized, transcription factor activity scores in the structure of [n_samples, n_features]. This is the primary output to analyze. Please see our [paper](https://doi.org/10.1016/j.isci.2024.109124) or the [tutorial](https://github.com/ohsu-comp-bio/regulon-enrichment/tree/master/tutorial) for ways to analyze these scores.
   2. `priori_activity_score_weights.tsv`: This file contains the transcription-factor target gene weights. This file is useful to understand the impact of individual target genes on the overall transcription factor activity scores. Target genes with a large absolute `MoA` value (relative to other target genes) have a greater impact on the activity score. A positive `MoA` indicates that the expression of a given target gene is directly correlated to the expression of the transcription factor (and vice versa).
   3. `priori_object.pkl`: This pickle stores all of the information that Priori used to generate the activity scores, including the input parameters. In order to load this file, use the `read_pickle` command from `regulon/regulon_utils.py`. 
 
 # Paper
 
-Priori has been released as a pre-print. If you use our program in your studies, please cite our paper:
+Priori has been published in Cell iScience. If you use our program in your studies, please cite our paper:
 
-Yashar, WM, Estabrook, J, et al. Predicting transcription factor activity using prior biological information. bioRxiv (2023). https://doi.org/10.1101/2022.12.16.520295 
+Yashar WM, Estabrook J, Holly HD, Somers J, Nikolova O, Babur Ö, Braun TP, Demir E. Predicting transcription factor activity using prior biological information. iScience. 2024 Feb 5;27(3):109124. doi: 10.1016/j.isci.2024.109124. PMID: 38455978; PMCID: PMC10918219.
