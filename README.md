@@ -1,3 +1,10 @@
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/priori/badges/version.svg)](https://anaconda.org/conda-forge/priori)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/priori/badges/latest_release_date.svg)](https://anaconda.org/conda-forge/priori)
+[![Anaconda-Server Badge](
+https://anaconda.org/conda-forge/priori/badges/platforms.svg)](https://anaconda.org/conda-forge/priori)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/priori/badges/license.svg)](https://anaconda.org/conda-forge/priori)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/priori/badges/downloads.svg)](https://anaconda.org/conda-forge/priori)
+
 # Introduction
 
 Disruption of normal transcription factor regulation is associated with a broad range of diseases. It is important to detect aberrant transcription factor activity to better understand disease pathogenesis. We have developed Priori, a method to predict transcription factor activity from RNA sequencing data. Priori has two key advantages over existing methods. First, Priori utilizes literature-supported regulatory information to identify transcription factor-target relationships. It then applies linear models to determine the impact of transcription factor regulation on the expression of its target genes. Second, results from a third-party benchmarking pipeline reveals that Priori detects aberrant activity from 124 gene perturbation experiments with higher sensitivity and specificity than 11 other methods.
